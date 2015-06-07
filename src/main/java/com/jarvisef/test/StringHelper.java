@@ -19,7 +19,7 @@ public class StringHelper {
         int iChar = 0;
 
         try {
-            // UTF-8·Î º¯È¯ÇÏ´Â°æ¿ì ÇÑ±Û 2Byte, ±âÅ¸ 1Byte·Î ¶³¾îÁü
+            // UTF-8ë¡œ ë³€í™˜í•˜ëŠ”ê²½ìš° í•œê¸€ 2Byte, ê¸°íƒ€ 1Byteë¡œ ë–¨ì–´ì§
             bytTemp = strData.getBytes("EUC-KR");
             iLength = bytTemp.length;
 
@@ -30,12 +30,12 @@ public class StringHelper {
                 }
                 iChar = (int)bytTemp[iIndex];
                 if((iChar > 127)|| (iChar < 0)) {
-                    // ÇÑ±ÛÀÇ °æ¿ì(2byte Åë°úÃ³¸®)
-                    // ÇÑ±ÛÀº 2ByteÀÌ±â ¶§¹®¿¡ ´ÙÀ½ ±ÛÀÚ´Â º¼°Íµµ ¾øÀÌ ½ºÅµÇÑ´Ù
+                    // í•œê¸€ì˜ ê²½ìš°(2byte í†µê³¼ì²˜ë¦¬)
+                    // í•œê¸€ì€ 2Byteì´ê¸° ë•Œë¬¸ì— ë‹¤ìŒ ê¸€ìžëŠ” ë³¼ê²ƒë„ ì—†ì´ ìŠ¤í‚µí•œë‹¤
                     iRealStart++;
                     iIndex++;
                 } else {
-                    // ±âÅ¸ ±Û¾¾(1Byte Åë°úÃ³¸®)
+                    // ê¸°íƒ€ ê¸€ì”¨(1Byte í†µê³¼ì²˜ë¦¬)
                     iRealStart++;
                 }
             }
@@ -46,12 +46,12 @@ public class StringHelper {
             {
                 iChar = (int)bytTemp[iIndex];
                 if((iChar > 127)|| (iChar < 0)) {
-                    // ÇÑ±ÛÀÇ °æ¿ì(2byte Åë°úÃ³¸®)
-                    // ÇÑ±ÛÀº 2ByteÀÌ±â ¶§¹®¿¡ ´ÙÀ½ ±ÛÀÚ´Â º¼°Íµµ ¾øÀÌ ½ºÅµÇÑ´Ù
+                    // í•œê¸€ì˜ ê²½ìš°(2byte í†µê³¼ì²˜ë¦¬)
+                    // í•œê¸€ì€ 2Byteì´ê¸° ë•Œë¬¸ì— ë‹¤ìŒ ê¸€ìžëŠ” ë³¼ê²ƒë„ ì—†ì´ ìŠ¤í‚µí•œë‹¤
                     iRealEnd++;
                     iIndex++;
                 } else {
-                    // ±âÅ¸ ±Û¾¾(1Byte Åë°úÃ³¸®)
+                    // ê¸°íƒ€ ê¸€ì”¨(1Byte í†µê³¼ì²˜ë¦¬)
                     iRealEnd++;
                 }
             }
@@ -62,6 +62,7 @@ public class StringHelper {
 
         return strData.substring(iRealStart, iRealEnd);
     }
+
 
     public static List<String> readLines(File file) throws Exception {
         if (!file.exists()) {

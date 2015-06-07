@@ -78,7 +78,8 @@ public class Packet {
 
         //System.out.println(subString(recvPacket.getItem("생일").raw(), 0, 3));
 
-        System.out.println(StringHelper.subString(recvPacket.getItem("생일").raw(), 0, 3));
+        //System.out.println(StringHelper.subString(recvPacket.getItem("생일").raw(), 0, 3));
+        System.out.println(recvPacket.getItem("생일").raw());
 
 
 
@@ -106,7 +107,7 @@ public class Packet {
 //        if (readDataList.get(0).toUpperCase().contains("[HEAD]")) {
 //            System.out.println(readDataList.get(0).toUpperCase());
 //        }
-
+//
 //        if (readDataList.get(0).matches(".*[HEAD].*")) {
 //            System.out.println(readDataList.get(0).toUpperCase());
 //        }
@@ -124,14 +125,14 @@ public class Packet {
     }
 
 
-    public String getItem(String div, String data) {
+    public String getItem(String filter, String data) {
 
         String retVal = null;
 
-        if (div.toUpperCase().equals("HEAD")) {
+        if (filter.toUpperCase().equals("HEAD")) {
             // Head
 
-        } else if (div.toUpperCase().equals("TAIL")) {
+        } else if (filter.toUpperCase().equals("TAIL")) {
             // Tail
 
         } else {
@@ -141,14 +142,14 @@ public class Packet {
         return retVal.toString();
     }
 
-    public String getItem(String div, String data, int length) {
+    public String getItem(String filter, String data, int length) {
 
         String retVal = null;
 
-        if (div.toUpperCase().equals("HEAD")) {
+        if (filter.toUpperCase().equals("HEAD")) {
             // Head
 
-        } else if (div.toUpperCase().equals("TAIL")) {
+        } else if (filter.toUpperCase().equals("TAIL")) {
             // Tail
 
         } else {
