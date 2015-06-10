@@ -16,25 +16,25 @@ import java.util.Date;
 import java.util.Locale;
 
 /*#########################################################################################################
-# 1. ÆÄÀÏ¸í : Common.java                   #
-# 2. ¿ë   µµ : ÇÑ±¹¾î À¥ ½ÎÀÌÆ® °³¹ß½Ã¿¡ »ç¿ëµÇ´Â JAVA¿ë ¹èÄ¡ À¯Æ¿¸®Æ¼        #
-# 3. °³¹ßÀÚ : (ÁÖ)ÀÌ¿£¾ÆÀÌ½ºÆ©µğ¿À À¥ »ç¾÷ÆÀ ÆÀÀå Á¶µ¿Èñ           #
-# 4. ½ÎÀÌÆ® : http://blog.naver.com/dongheejo               #
-# 5. ÃÖÃÊ °³¹ßÀÏ : 2009³â 05¿ù 13ÀÏ                 #
-# 6. ÃÖÁ¾ ¼öÁ¤ÀÏ : 2009³â 05¿ù 13ÀÏ                 #
+# 1. íŒŒì¼ëª… : Common.java                   #
+# 2. ìš©   ë„ : í•œêµ­ì–´ ì›¹ ì‹¸ì´íŠ¸ ê°œë°œì‹œì— ì‚¬ìš©ë˜ëŠ” JAVAìš© ë°°ì¹˜ ìœ í‹¸ë¦¬í‹°        #
+# 3. ê°œë°œì : (ì£¼)ì´ì—”ì•„ì´ìŠ¤íŠœë””ì˜¤ ì›¹ ì‚¬ì—…íŒ€ íŒ€ì¥ ì¡°ë™í¬           #
+# 4. ì‹¸ì´íŠ¸ : http://blog.naver.com/dongheejo               #
+# 5. ìµœì´ˆ ê°œë°œì¼ : 2009ë…„ 05ì›” 13ì¼                 #
+# 6. ìµœì¢… ìˆ˜ì •ì¼ : 2009ë…„ 05ì›” 13ì¼                 #
 #########################################################################################################
 
 
 
 /************************************************************************************************
- * Common.java : 365ÀÏ 24½Ã°£ µ¿ÀÛÇÏ¸é¼­, °ü·Ã À¥ÇÏµå ¾÷Ã¼¿¡ ´ëÇÑ ¹èÄ¡ Æ÷ÀÎÆ®¸¦ ½Ç½ÃÇÑ´Ù. *
+ * Common.java : 365ì¼ 24ì‹œê°„ ë™ì‘í•˜ë©´ì„œ, ê´€ë ¨ ì›¹í•˜ë“œ ì—…ì²´ì— ëŒ€í•œ ë°°ì¹˜ í¬ì¸íŠ¸ë¥¼ ì‹¤ì‹œí•œë‹¤. *
  *************************************************************************************************/
-// °ü·Ã ÆÄÀÏÀ» ÀÎÄğ·çµå ÇÑ´Ù.
+// ê´€ë ¨ íŒŒì¼ì„ ì¸ì¿¨ë£¨ë“œ í•œë‹¤.
 
-// Å¬·¡½º¸¦ Á¤ÀÇÇÑ´Ù.
+// í´ë˜ìŠ¤ë¥¼ ì •ì˜í•œë‹¤.
 public class Common
 {
-    // ¸ŞÀÎ¸Ş¼­µå Á¤ÀÇ
+    // ë©”ì¸ë©”ì„œë“œ ì •ì˜
     public static void main(String[] args)
     {
         Common ssb = new Common();
@@ -45,9 +45,9 @@ public class Common
             i++;
             try
             {
-                Thread.sleep(10000); // ÃÖÃÊ ½ÇÇà½Ã°£À» ±âÁ¡À¸·Î 60ÃÊ ´ÜÀ§·Î ½Ã°£À» Âï´Â´Ù.
+                Thread.sleep(10000); // ìµœì´ˆ ì‹¤í–‰ì‹œê°„ì„ ê¸°ì ìœ¼ë¡œ 60ì´ˆ ë‹¨ìœ„ë¡œ ì‹œê°„ì„ ì°ëŠ”ë‹¤.
 
-                //Æ÷¸ËÀ» ÁöÁ¤ÇØ¼­ ³¯Â¥ ±¸ÇÏ±â
+                //í¬ë§·ì„ ì§€ì •í•´ì„œ ë‚ ì§œ êµ¬í•˜ê¸°
                 SimpleDateFormat formatter =
                         new SimpleDateFormat("yyyy.MM.dd HH:mm:ss EEE",Locale.ENGLISH);
                 Date currentTime = new Date();
@@ -57,24 +57,24 @@ public class Common
                 //System.out.println(dTime.indexOf(" 00:00"));
 
                 /********************************************************
-                 * ÀÏ¹èÄ¡¸¦ ½ÇÇà½ÃÅ³ ½Ã°£  (¿ù¿äÀÏ ~ Åä¿äÀÏ 11:59) *
+                 * ì¼ë°°ì¹˜ë¥¼ ì‹¤í–‰ì‹œí‚¬ ì‹œê°„  (ì›”ìš”ì¼ ~ í† ìš”ì¼ 11:59) *
                  *********************************************************/
                 if(dTime.indexOf(" 23:59") != -1 && dTime.indexOf(" Sun")== -1)
                 {
-                    System.out.println("Step-1. www.kiniwini.com Connect Resquest. : ¸í·É¾î.");
-                    ssb.callBatch("¸í·É¾î");
+                    System.out.println("Step-1. www.kiniwini.com Connect Resquest. : ëª…ë ¹ì–´.");
+                    ssb.callBatch("ëª…ë ¹ì–´");
                 }
 
                 /********************************************************
-                 * ÀÏ¹èÄ¡¸¦ ½ÇÇà ¹× ÃÊ±âÈ­ÇÒ ½Ã°£  (ÀÏ¿äÀÏ 11:59)  *
+                 * ì¼ë°°ì¹˜ë¥¼ ì‹¤í–‰ ë° ì´ˆê¸°í™”í•  ì‹œê°„  (ì¼ìš”ì¼ 11:59)  *
                  *********************************************************/
                 if(dTime.indexOf(" 23:59") != -1 && dTime.indexOf(" Sun")!= -1)
                 {
-                    System.out.println("Step-1. www.kiniwini.com Connect Resquest. : ¸í·É¾î.");
-                    ssb.callBatch("¸í·É¾î");
+                    System.out.println("Step-1. www.kiniwini.com Connect Resquest. : ëª…ë ¹ì–´.");
+                    ssb.callBatch("ëª…ë ¹ì–´");
 
-                    System.out.println("Step-1. www.kiniwini.com Connect Resquest. : ¸í·É¾î.");
-                    ssb.callBatch("¸í·É¾î");
+                    System.out.println("Step-1. www.kiniwini.com Connect Resquest. : ëª…ë ¹ì–´.");
+                    ssb.callBatch("ëª…ë ¹ì–´");
                 }
 
             }
@@ -85,29 +85,29 @@ public class Common
         }
     }
 
-    // ¹èÄ¡ ÇÔ¼ö Á¤ÀÇ
+    // ë°°ì¹˜ í•¨ìˆ˜ ì •ì˜
     public void callBatch(String CMD_COMMON)
     {
-        // ¼Ó¼º Á¤ÀÇ
-        URL url;// URL ÁÖ¼Ò °´Ã¼
-        URLConnection connection;// URLÁ¢¼ÓÀ» °¡Áö´Â °´Ã¼
-        InputStream is;// URLÁ¢¼Ó¿¡¼­ ³»¿ëÀ» ÀĞ±âÀ§ÇÑ Stream
+        // ì†ì„± ì •ì˜
+        URL url;// URL ì£¼ì†Œ ê°ì²´
+        URLConnection connection;// URLì ‘ì†ì„ ê°€ì§€ëŠ” ê°ì²´
+        InputStream is;// URLì ‘ì†ì—ì„œ ë‚´ìš©ì„ ì½ê¸°ìœ„í•œ Stream
         InputStreamReader isr;
         BufferedReader br;
         String cmd_common = CMD_COMMON;
 
         try
         {
-            // URL°´Ã¼¸¦ »ı¼ºÇÏ°í ÇØ´ç URL·Î Á¢¼ÓÇÑ´Ù..
-            url = new URL("Á¢¼ÓÁÖ¼Ò");
-                    connection = url.openConnection();
+            // URLê°ì²´ë¥¼ ìƒì„±í•˜ê³  í•´ë‹¹ URLë¡œ ì ‘ì†í•œë‹¤..
+            url = new URL("ì ‘ì†ì£¼ì†Œ");
+            connection = url.openConnection();
 
-            // ³»¿ëÀ» ÀĞ¾î¿À±âÀ§ÇÑ InputStream°´Ã¼¸¦ »ı¼ºÇÑ´Ù..
+            // ë‚´ìš©ì„ ì½ì–´ì˜¤ê¸°ìœ„í•œ InputStreamê°ì²´ë¥¼ ìƒì„±í•œë‹¤..
             is = connection.getInputStream();
             isr = new InputStreamReader(is);
             br = new BufferedReader(isr);
 
-            // ³»¿ëÀ» ÀĞ¾î¼­ È­¸é¿¡ Ãâ·ÂÇÑ´Ù..
+            // ë‚´ìš©ì„ ì½ì–´ì„œ í™”ë©´ì— ì¶œë ¥í•œë‹¤..
             String buf = null;
 
             while (true)
@@ -120,7 +120,7 @@ public class Common
         catch (MalformedURLException mue)
         {
             System.err
-                    .println("Àß¸øµÇ URLÀÔ´Ï´Ù. »ç¿ë¹ı : java URLConn http://hostname/path]");
+                    .println("ì˜ëª»ë˜ URLì…ë‹ˆë‹¤. ì‚¬ìš©ë²• : java URLConn http://hostname/path]");
             System.exit(1);
         }
         catch (IOException ioe)
