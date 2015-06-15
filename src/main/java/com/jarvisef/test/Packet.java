@@ -1,9 +1,10 @@
 package com.jarvisef.test;
 
+import java.io.File;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by youngsunkr on 2015-06-01.
@@ -90,7 +91,38 @@ public class Packet {
 //        }
 //        s.close();
 
-        List<String> readDataList = FileUtils.readFileAsListOfStrings("D:/20150606전문.dat");
+        //List<String> readDataList = FileUtils.readFileAsListOfStrings("D:/20150606전문.dat");
+        //List<String> readDataList = FileUtils.subDirList(DirectoryDefine.base_Directory);
+
+
+//        //c:\에 있는 모든 파일
+//        File fl=new File(DirectoryDefine.base_Directory);
+//
+//        FileUtils.RECURSIVE_FILE(fl);
+
+        String message = null;
+        File path = new File( DirectoryDefine.base_Directory );
+
+        if( path.exists() == false ){
+            System.out.println("경로가 존재하지 않습니다");
+        }
+        File[] fileList = path.listFiles();
+
+
+        FileUtils.RECURSIVE_FILE(DirectoryDefine.base_Directory);
+
+        Collections.reverse(FileUtils.retFileList);
+
+        for(String str:FileUtils.retFileList) {
+            System.out.println(str);
+        }
+
+        FileUtils.retFileList.clear();
+
+
+
+
+    //System.out.println(readDataList);
 
         //FileUtils.readFileByLines("D:/20150606전문.dat");
 
