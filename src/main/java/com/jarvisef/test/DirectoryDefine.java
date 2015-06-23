@@ -5,7 +5,7 @@ package com.jarvisef.test;
  */
 public class DirectoryDefine {
 
-    public static final String base_Directory               = "d:/전문파일테스트/DATA";
+    public static final String base_Directory               = "d:/전문파일테스트/data/batch";
 
     public static final String DIRECTORY_HANACARD_RCV   	= base_Directory + "/HFG1000/RCV";
     public static final String DIRECTORY_HANABANK_RCV   	= base_Directory + "/HFG2000/RCV";
