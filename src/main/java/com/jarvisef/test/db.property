@@ -1,0 +1,6 @@
+drivers=com.tmax.tibero.jdbc.TbDriver
+#membership.url=jdbc:tibero:thin:@10.10.10.162:8629:tibero
+membership.url=jdbc:tibero:thin:@10.137.122.162:8629:tibero
+membership.user=mem_dev
+membership.password=memdev01
+membership.maxConn=20
