@@ -201,6 +201,11 @@ public class FileUtils {
      */
     public static void writeFile(String canonicalFilename, String text)
             throws IOException {
+
+
+//        FileWriter fw = new FileWriter(fileName);
+//        BufferedWriter bw = new BufferedWriter(fw,1024);
+
         File file = new File(canonicalFilename);
         //BufferedWriter out = new BufferedWriter(new FileWriter(file));
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "EUC-KR"));

@@ -94,8 +94,8 @@ public class Packet {
 //
 //        FileUtils.RECURSIVE_FILE(fl);
 
-//        DBHandler db = new DBHandler();
-//        db.tibero.setAutoCommit(true);
+        DBHandler db = new DBHandler();
+        db.tibero.setAutoCommit(true);
 
 //        CallableStatement cstmt = db.tibero.prepareCall("{call MEM_IF_FILE(?, ?, ?, ?, ?, ?, ?, ?, ?}");
 //        cstmt.registerOutParameter(1, Types.VARCHAR);
@@ -106,7 +106,7 @@ public class Packet {
 //        cstmt.registerOutParameter(6, Types.VARCHAR);
 //        cstmt.setString(7, "적립 파일 전문");
 //        cstmt.setString(8, "21");
-//        cstmt.registerOutParameter(9, DdataType);
+//        cstmt.registerOutParameter(9, JdbcType.CURSOR.TYPE_CODE);
 
 //        try{
 //            cstmt.execute();
