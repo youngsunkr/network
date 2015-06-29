@@ -1,10 +1,10 @@
 package com.jarvisef.test;
 
-import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by youngsunkr on 2015-06-01.
@@ -30,7 +30,7 @@ public class Packet {
         return nameAccess.get(name);
     }
 
-    public String raw() {
+    public String raw()  throws UnsupportedEncodingException {
         StringBuffer result = new StringBuffer();
         for(Item item: items) {
             result.append(item.raw());
@@ -38,18 +38,25 @@ public class Packet {
         return result.toString();
     }
 
-    public void parse(String data) {
-        byte[] bdata = data.getBytes();
+    public void parse(String data) throws UnsupportedEncodingException {
+        byte[] bdata = data.getBytes("EUC-KR");
         int pos = 0;
         for(Item item: items) {
             byte[] temp = new byte[item.getLength()];
             System.arraycopy(bdata, pos, temp, 0, item.getLength());
             pos += item.getLength();
-            item.setValue(new String(temp));
+            item.setValue(new String(temp, "EUC-KR"));
         }
     }
 
     public static void main(String[] args) throws Exception {
+//        FileWriter fw = new FileWriter("d:/out.txtt");
+//        for (int i = 0; i < 10; i++) {
+//            String data = i + 1 + " 번째 줄입니다.\r\n";
+//            fw.write(data);
+//        }
+//        fw.close();
+
         Packet packet = new Packet();
         Item item1 = Item.create("이름", 10, "홍길동");
         Item item2 = Item.create("전화번호", 11, "01099998888");
@@ -64,24 +71,11 @@ public class Packet {
 
         System.out.println(recvPacket.getItem(1).raw());
         System.out.println(recvPacket.getItem("주소").raw());
-
-        // 1. Head
-        // 2. Data
-        // 3. Tail
-
-        // Common("Head", Parsing);
-        // Common (Parsing function);
-        // Common("Tail", Parsing);
-
-        //
-
         //System.out.println(recvPacket.getItem("주소").raw());
-
         //System.out.println(subString(recvPacket.getItem("생일").raw(), 0, 3));
 
         //System.out.println(StringHelper.subString(recvPacket.getItem("생일").raw(), 0, 3));
         System.out.println(recvPacket.getItem("생일").raw());
-
 
 
 //        Scanner s = new Scanner(new File("filepath"));
@@ -100,97 +94,49 @@ public class Packet {
 //
 //        FileUtils.RECURSIVE_FILE(fl);
 
-        String message = null;
-        File path = new File( DirectoryDefine.base_Directory );
+        DBHandler db = new DBHandler();
+        db.tibero.setAutoCommit(true);
 
-        if( path.exists() == false ){
-            System.out.println("경로가 존재하지 않습니다");
-        }
-        File[] fileList = path.listFiles();
+//        CallableStatement cstmt = db.tibero.prepareCall("{call MEM_IF_FILE(?, ?, ?, ?, ?, ?, ?, ?, ?}");
+//        cstmt.registerOutParameter(1, Types.VARCHAR);
+//        cstmt.registerOutParameter(2, Types.VARCHAR);
+//        cstmt.registerOutParameter(3, Types.VARCHAR);
+//        cstmt.registerOutParameter(4, Types.VARCHAR);
+//        cstmt.registerOutParameter(5, Types.VARCHAR);
+//        cstmt.registerOutParameter(6, Types.VARCHAR);
+//        cstmt.setString(7, "적립 파일 전문");
+//        cstmt.setString(8, "21");
+//        cstmt.registerOutParameter(9, JdbcType.CURSOR.TYPE_CODE);
 
+//        try{
+//            cstmt.execute();
+//        } catch(SQLException ex) {
+//            System.out.println("ERROR[" + ex.getErrorCode() + " : " + ex.getMessage());
+//            ex.printStackTrace();
+//        }
+//
+//        String o_result_code = cstmt.getString(1);
+//        System.out.printf(o_result_code);
+//
+//        String o_result_args = cstmt.getString(2);
+//        System.out.printf(o_result_args);
+//
+//        String o_result_msg = cstmt.getString(3);
+//        System.out.printf(o_result_msg);
 
         FileUtils.RECURSIVE_FILE(DirectoryDefine.base_Directory);
+        for (String s : FileUtils.retFileList) {
+            System.out.println(String.format("%s", s));
 
-        Collections.reverse(FileUtils.retFileList);
-
-        for(String str:FileUtils.retFileList) {
-            System.out.println(str);
+            List<String> readDataList = FileUtils.readFileAsListOfStrings(s);
         }
 
+        //Collections.reverse(FileUtils.retFileList);
         FileUtils.retFileList.clear();
-
-
-
-
-    //System.out.println(readDataList);
-
-        //FileUtils.readFileByLines("D:/20150606전문.dat");
-
-        /*
-        * 문자열 검색
-        * case1 : indexOf
-        * case2 : contains
-        * case3 : matches
-        * */
-//        if (readDataList.get(0).toUpperCase().indexOf("[HEAD]") > -1) {
-//            System.out.println(readDataList.get(0).toUpperCase().indexOf("[HEAD]"));
-//        }
-//
-//        if (readDataList.get(0).toUpperCase().contains("[HEAD]")) {
-//            System.out.println(readDataList.get(0).toUpperCase());
-//        }
-//
-//        if (readDataList.get(0).matches(".*[HEAD].*")) {
-//            System.out.println(readDataList.get(0).toUpperCase());
-//        }
-
-        //System.out.println(Arrays.toString(list.toArray()));
-        //System.out.println(Arrays.toString(readDataList.toArray()));
-
-//        for (String s : readDataList) {
-//            System.out.println(String.format("%s aaaa", s));
-//
-//            FileUtils.writeFile("d:/123.dat", String.format("%s aaaa", s));
-//        }
-
-
+        System.out.println("초기화 완료");
+        System.out.println("");
     }
 
-
-    public String getItem(String filter, String data) {
-
-        String retVal = null;
-
-        if (filter.toUpperCase().equals("HEAD")) {
-            // Head
-
-        } else if (filter.toUpperCase().equals("TAIL")) {
-            // Tail
-
-        } else {
-            // Data
-
-        }
-        return retVal.toString();
-    }
-
-    public String getItem(String filter, String data, int length) {
-
-        String retVal = null;
-
-        if (filter.toUpperCase().equals("HEAD")) {
-            // Head
-
-        } else if (filter.toUpperCase().equals("TAIL")) {
-            // Tail
-
-        } else {
-            // Data
-
-        }
-
-        return retVal.toString();
-    }
 
 //    public static String subString(String str, int startIndex, int length)
 //    {

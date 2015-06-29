@@ -1,5 +1,7 @@
 package com.jarvisef.test;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Created by youngsunkr on 2015-06-01.
  */
@@ -32,9 +34,9 @@ public class Item {
         this.value = value;
     }
 
-    public String raw() {
+    public String raw() throws UnsupportedEncodingException {
         StringBuffer padded = new StringBuffer(this.value);
-        while (padded.toString().getBytes().length < this.length) {
+        while (padded.toString().getBytes("EUC-KR").length < this.length) {
             padded.append(' ');
         }
         return padded.toString();
@@ -48,12 +50,12 @@ public class Item {
         return item;
     }
 
-    public static void main(String[] args) {
-        Item item = new Item();
-        item.setName("�̸�");
-        item.setLength(10);
-        item.setValue("ȫ�浿");
-        System.out.println("[" + item.raw() + "]");
-    }
+//    public static void main(String[] args) {
+//        Item item = new Item();
+//        item.setName("�̸�");
+//        item.setLength(10);
+//        item.setValue("ȫ�浿");
+//        System.out.println("[" + item.raw() + "]");
+//    }
 }
 

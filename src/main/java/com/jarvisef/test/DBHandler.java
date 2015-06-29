@@ -16,21 +16,21 @@ package com.jarvisef.test;
 import java.sql.Connection;
 public class DBHandler {
     protected DBConnectionManager connMgr;
-    protected Connection mydb;
+    protected Connection tibero;
     /**
      * DB Pool로부터 접속을 하나 얻어주는 메쏘드.
      *
      */
     public Connection getDbConnection(String dbName) {
         connMgr = DBConnectionManager.getInstance();
-        mydb = connMgr.getConnection(dbName);
-        return mydb;
+        tibero = connMgr.getConnection(dbName);
+        return tibero;
     }
     /**
      * DB Pool에 접속을 돌려주는 메쏘드.
      *
      */
     public void freeDbConnection(String dbName) {
-        connMgr.freeConnection(dbName, mydb);
+        connMgr.freeConnection(dbName, tibero);
     }
 }

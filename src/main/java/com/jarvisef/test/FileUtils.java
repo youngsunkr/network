@@ -28,83 +28,131 @@ public class FileUtils {
      * Strings.
      */
     public static List<String> readFileAsListOfStrings(String filename) throws Exception {
-        List<String> records = new ArrayList<String>();
-        //BufferedReader reader = new BufferedReader(new FileReader(filename));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename),"UTF8"));
+
+//        DBHandler db = new DBHandler("membership");
+//        db.tibero.setAutoCommit(false);
+
+        String txtName = null;
+        List<String> orgRowData = new ArrayList<String>();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename),"EUC-KR"));
         int lineNumber = 1;
         String line;
 
+        // java파일 기본 encoding
+        //System.out.println("file encoding : " + System.getProperty("file.encoding"));
+
         try {
             while ((line = reader.readLine()) != null) {
-                records.add(line);
 
-                // �о�� ���� �Ľ�
-
-                if (line.toUpperCase().contains("[HEAD]")) {
+                if (line.substring(0, 1).toUpperCase().contains("H")) {
 
                     //System.out.println(line.toUpperCase());
 
                     Packet recvPacket = new Packet();
-                    recvPacket.addItem(Item.create("HEAD", 6, null));
-                    recvPacket.addItem(Item.create("헤드1", 5, null));
-                    recvPacket.addItem(Item.create("헤드2", 5, null));
-                    recvPacket.addItem(Item.create("헤드3", 5, null));
-                    recvPacket.addItem(Item.create("헤드4", 5, null));
-                    recvPacket.addItem(Item.create("헤드5", 6, null));
+                    recvPacket.addItem(Item.create("구분", 1, null));
+                    recvPacket.addItem(Item.create("일련번호", 9, null));
+                    recvPacket.addItem(Item.create("제휴사코드", 7, null));
+                    recvPacket.addItem(Item.create("파일명", 35, null));
+                    recvPacket.addItem(Item.create("생성일자", 14, null));
+                    recvPacket.addItem(Item.create("FILLER", 734, null));
+
                     recvPacket.parse(line.toUpperCase());
                     //System.out.println(line.toUpperCase());
                     //System.out.println(recvPacket.getItem("HEAD").raw());
-                    System.out.println(recvPacket.getItem("헤드5").raw());
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(recvPacket.getItem("일련번호").raw()), recvPacket.getItem("일련번호").raw()));
 
-                } else if (line.toUpperCase().contains("[DATA]")) {
+                    txtName = recvPacket.getItem("파일명").raw().trim();
+                    int pos = txtName.lastIndexOf(".");
+                    String fileExt = txtName.substring(pos + 1).toLowerCase();
+                    //txtName = txtName.substring(0, pos).concat(".").concat(fileExt);
+                    txtName = txtName.substring(0, pos).concat(".sam");
+                } else if (line.substring(0, 1).toUpperCase().contains("D")) {
                     //System.out.println(line.toUpperCase());
 
                     Packet recvPacket = new Packet();
-                    recvPacket.addItem(Item.create("DATA", 6, null));
-                    recvPacket.addItem(Item.create("Data1", 6, null));
-                    recvPacket.addItem(Item.create("Data2", 6, null));
-                    recvPacket.addItem(Item.create("Data3", 6, null));
-                    recvPacket.addItem(Item.create("Data4", 6, null));
-                    recvPacket.addItem(Item.create("Data5", 6, null));
+                    recvPacket.addItem(Item.create("RecordDv", 1, null));
+                    recvPacket.addItem(Item.create("Data1", 12, null));
                     recvPacket.parse(line.toUpperCase());
+
                     //System.out.println(line.toUpperCase());
                     //System.out.println(recvPacket.getItem("HEAD").raw());
-                    System.out.println(recvPacket.getItem("Data5").raw());
-                } else {
+
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(recvPacket.getItem("Data1").raw()), recvPacket.getItem("Data1").raw()));
+
+//                    if (cstmt != null) cstmt.close();
+
+                    System.out.println(String.format("lineNumber : %s", lineNumber));
+                    lineNumber++;
+
+                } else if (line.substring(0, 1).toUpperCase().contains("T")) {
                     //System.out.println(line.toUpperCase());
 
-                    Packet recvPacket = new Packet();
-                    recvPacket.addItem(Item.create("TAIL", 6, null));
-                    recvPacket.addItem(Item.create("Data1", 16, null));
-                    recvPacket.addItem(Item.create("Data2", 16, null));
-                    recvPacket.addItem(Item.create("Data3", 20, null));
-                    recvPacket.addItem(Item.create("Data4", 16, null));
-                    recvPacket.addItem(Item.create("Data5", 16, null));
-                    recvPacket.addItem(Item.create("Data6", 20, null));
-                    recvPacket.parse(line.toUpperCase());
+                    Packet tailRcvPacket = new Packet();
+                    tailRcvPacket.addItem(Item.create("구분", 1, null));
+                    tailRcvPacket.addItem(Item.create("일련번호", 9, null));
+                    tailRcvPacket.addItem(Item.create("제휴사코드", 7, null));
+                    tailRcvPacket.addItem(Item.create("RecordCnt", 7, null));
+                    tailRcvPacket.addItem(Item.create("FILLER", 776, null));
+                    tailRcvPacket.parse(line.toUpperCase());
 
                     //System.out.println(recvPacket.getItem("TAIL").raw());
-                    System.out.println(String.format("[%s] : [%s]", recvPacket.getItem("Data3").raw().length(), recvPacket.getItem("Data3").raw()));
-                    System.out.println(String.format("[%s] : [%s]", recvPacket.getItem("Data6").raw().length(), recvPacket.getItem("Data6").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(tailRcvPacket.getItem("일련번호").raw()), tailRcvPacket.getItem("일련번호").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(tailRcvPacket.getItem("제휴사코드").raw()), tailRcvPacket.getItem("제휴사코드").raw()));
                     System.out.println(line);
                 }
 
-                lineNumber++;
+                orgRowData.add(line);
             }
             reader.close();
 
+//            db.tibero.commit();
+//            db.tibero.setTransactionIsolation(db.tibero.TRANSACTION_READ_COMMITTED);
+//            if (db.tibero != null) db.tibero.close();
+
+            File readFileName = new File(filename);
+            for (String list : orgRowData) {
+                // 파일 저장
+                FileUtils.writeFile(readFileName.getAbsolutePath(), String.format("%sreaultCode0000", list));
+            }
+
+            // 파일 복사
+            File source = new File(DirectoryDefine.DIRECTORY_HANACARD_RCV_BACKUP + "/" + txtName);
+            File copyFile = new File(DirectoryDefine.DIRECTORY_HANACARD_SND + "/" + txtName);
+            File target = new File(DirectoryDefine.DIRECTORY_HANACARD_SND + "/" + txtName + ".tmp");
+            File sndBackup = new File(DirectoryDefine.DIRECTORY_HANACARD_SND_BACKUP + "/" + txtName);
+
+            if (!source.exists()) {
+//                source.mkdir();
+                copyFile(readFileName, source);
+            }
+            if (!copyFile.exists()) {
+//                copyFile.mkdir();
+                copyFile(source, target);
+            }
+
+            // 파일명 변경
+            target.renameTo(new File(DirectoryDefine.DIRECTORY_HANACARD_SND + "/" + txtName));
+
+            // 최종 파일 제거
+            readFileName.delete();
+
         } catch (IOException e) {
+//            if (db.tibero != null) {
+//                db.tibero.rollback();
+//                db.tibero.close();
+//            }
             e.printStackTrace();
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
-                } catch (IOException e1) {
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             }
         }
 
-        return records;
+        return orgRowData;
     }
 
     /**
@@ -153,12 +201,30 @@ public class FileUtils {
      */
     public static void writeFile(String canonicalFilename, String text)
             throws IOException {
+
+
+//        FileWriter fw = new FileWriter(fileName);
+//        BufferedWriter bw = new BufferedWriter(fw,1024);
+
         File file = new File(canonicalFilename);
         //BufferedWriter out = new BufferedWriter(new FileWriter(file));
-        BufferedWriter out = new BufferedWriter(new FileWriter(file, true));
-        out.newLine();  // line feed
-        out.write(text);
-        out.close();
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "EUC-KR"));
+
+        try {
+            out.newLine();  // line feed
+            out.write(text);
+            out.close();
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch(IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
@@ -191,6 +257,7 @@ public class FileUtils {
             int size;
             while ((size = bufferedInputStream.read(buffer)) > -1) {
                 bufferedOutputStream.write(buffer, 0, size);
+                bufferedOutputStream.flush();
             }
         } catch (IOException e) {
             // TODO may want to do something more here
@@ -343,40 +410,6 @@ public class FileUtils {
     }
 
     /**
-     * 임의 파일 내용 읽기
-     */
-    public static void readFileByRandomAccess(String fileName) {
-        RandomAccessFile randomFile = null;
-        try {
-            System.out.println("임의 파일 내용을 읽는 동안: ");
-            // 열 한 임의 접근 파일 읽기 전용 방식 대로 흐르다,
-            randomFile = new RandomAccessFile(fileName, "r");
-            // 파일 길이, 바이트
-            long fileLength = randomFile.length();
-            // 파일을 읽을 수 있는 시작 위치
-            int beginIndex = (fileLength > 4) ? 4 : 0;
-            // 파일 읽는 것이다 시작 위치 이동 beginIndex 위치.
-            randomFile.seek(beginIndex);
-            byte[] bytes = new byte[10];
-            int byteread = 0;
-            // 한 번 읽어 10개 바이트, 만약 파일 내용 부족 10개 읽은 바이트 않으면 남은 바이트.
-            // 는 한 번 읽은 바이트 주다 byteread
-            while ((byteread = randomFile.read(bytes)) != -1) {
-                System.out.write(bytes, 0, byteread);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (randomFile != null) {
-                try {
-                    randomFile.close();
-                } catch (IOException e1) {
-                }
-            }
-        }
-    }
-
-    /**
      * 디스플레이 입력 중 아직 하는 바이트
      */
     private static void showAvailableBytes(InputStream in) {
@@ -391,44 +424,47 @@ public class FileUtils {
     public static void RECURSIVE_FILE(String source){
         File dir = new File(source);
         File[] fileList = dir.listFiles();
-        //List<String> retFileList = new ArrayList<String>();
         try {
 
             for (int i = 0; i < fileList.length; i++) {
                 File file = fileList[i];
                 if (file.isFile()) {
-                    if (file.getName().indexOf("HFG") > -1 && file.getName().endsWith(".sam")) {
+                    if (file.getName().indexOf("HFG") > -1 && file.getName().toUpperCase().endsWith(".SAM")) {
                         // 파일이 있다면 파일 이름 출력
                         System.out.println("\t 파일 이름 = " + file.getName());
-                        retFileList.add(file.getName());
+                        //retFileList.add(file.getName());
+                        retFileList.add(file.getPath());
                     }
                 } else if (file.isDirectory()) {
-                    System.out.println("디렉토리 이름 = " + file.getName());
-                    // 서브디렉토리가 존재하면 재귀적 방법으로 다시 탐색
-                    RECURSIVE_FILE(file.getCanonicalPath().toString());
+                    if (file.getName().indexOf("HFG") > -1 || file.getName().toUpperCase().equals("RCV")) {
+                        System.out.println("디렉토리 이름 = " + file.getName());
+                        // 서브디렉토리가 존재하면 재귀적 방법으로 다시 탐색
+                        RECURSIVE_FILE(file.getCanonicalPath().toString());
+                    }
                 }
             }
-        }catch(IOException e){
-
+        }catch(IOException ex){
+            ex.printStackTrace();
         }
-
-
-
-        //return retFileList;
     }
 
-    public static void RECURSIVE_FILE(File p_file) {
+    public static final int getByteSizeToComplex(String str) {
+        int en = 0;
+        int ko = 0;
+        int etc = 0;
 
-        File[] arrFS = p_file.listFiles();
-        for (int i = 0; i < arrFS.length; i++) {
-            if (arrFS[i].isDirectory()) {
-                //System.out.println(arrFS[i].getName());
-                RECURSIVE_FILE(arrFS[i]);
+        char[] string = str.toCharArray();
+
+        for (int j = 0; j < string.length; j++) {
+            if (string[j] >= 'A' && string[j] <= 'z') {
+                en++;
+            } else if (string[j] >= '\uAC00' && string[j] <= '\uD7A3') {
+                ko++;
+                ko++;
+            } else {
+                etc++;
             }
-            System.out.println(arrFS[i].getName());
-            //if()
         }
+        return (en + ko + etc);
     }
-
-
 }
