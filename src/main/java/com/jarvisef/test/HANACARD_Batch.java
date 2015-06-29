@@ -25,6 +25,8 @@ public class HANACARD_Batch implements Runnable {
 
         HANACARD_Batch processor = new HANACARD_Batch();
         System.out.println("시작");
+
+        processor.stop();
     }
 
     public void run() {
@@ -97,11 +99,16 @@ public class HANACARD_Batch implements Runnable {
 
                 }
                 //Thread.sleep(3600000*24);//24시간마다 실행
-                Thread.sleep(600000);//10분 마다 실행
+                Thread.sleep(5 * 1000);// 5초 마다 실행
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void stop() {
+        isRun = false;
+        System.out.println("종료");
     }
 
     public String ReceiveDataFileList() throws Exception {

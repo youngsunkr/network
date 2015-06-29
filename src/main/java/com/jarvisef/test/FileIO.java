@@ -1,56 +1,56 @@
 package com.jarvisef.test;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 
 /**
  * Created by youngsunkr on 2015-05-18.
  */
 public class FileIO {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException{
 //        FileOutputStream output = new FileOutputStream("d:/out.txt");
-//        for (int i=1; i<11; i++) {
-//            String data = i + " ¹øÂ° ÁÙÀÔ´Ï´Ù.\r\n";
+//        for(int i=1; i<11; i++) {
+//            String data = i+" ë²ˆì§¸ ì¤„ìž…ë‹ˆë‹¤.\r\n";
 //            output.write(data.getBytes());
 //        }
 //        output.close();
 
         /*
-        * FileWriter ¸¦ ÀÌ¿ëÇÏ¸é byte ¹è¿­ ´ë½Å ¹®ÀÚ¿­À» Á÷Á¢ ÆÄÀÏ¿¡ ¾µ ¼ö°¡ ÀÖ´Ù.
+        * FileWriter ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½Ï¸ï¿½ byte ï¿½è¿­ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½.
         * */
-//        FileWriter fw = new FileWriter("d:/out.txt");
-//        for (int i=1; i<11; i++) {
-//            String data = i + " ¹øÂ° ÁÙÀÔ´Ï´Ù.\r\n";
-//            fw.write(data);
-//        }
-//        fw.close();
+        FileWriter fw = new FileWriter("d:/out.txt");
+        for(int i=1; i<11; i++) {
+            String data = i+" ë²ˆì§¸ ì¤„ìž…ë‹ˆë‹¤.\r\n";
+            fw.write(data);
+        }
+        fw.close();
 //
 //        FileWriter fw2 = new FileWriter("d:/out.txt", true);
 //        for (int i=11; i<21; i++) {
-//            String data = i + " ¹øÂ° ÁÙÀÔ´Ï´Ù.\r\n";
+//            String data = i + " ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ô´Ï´ï¿½.\r\n";
 //            fw2.write(data);
 //        }
 //        fw2.close();
 
 //        /*
-//        * PrintWriter¸¦ ÀÌ¿ëÇÏ¸é \r\nÀ» µ¡ºÙÀÌ´Â ´ë½Å printlnÀÌ¶ó´Â ¸Þ½áµå¸¦ »ç¿ëÇÒ ¼ö ÀÖ°Ô µÈ´Ù.
+//        * PrintWriterï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½Ï¸ï¿½ \r\nï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ printlnï¿½Ì¶ï¿½ï¿½ ï¿½Þ½ï¿½å¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½È´ï¿½.
 //        * */
-//        PrintWriter pw = new PrintWriter("d:/out.txt");
-//        for (int i=1; i<11; i++) {
-//            String data = i + " ¹øÂ° ÁÙÀÔ´Ï´Ù.";
-//            pw.println(data);
-//        }
-//        pw.close();
-//
-//        PrintWriter pw2 = new PrintWriter(new FileWriter("d:/out.txt", true));
-//        for (int i=11; i<21; i++) {
-//            String data = i + " ¹øÂ° ÁÙÀÔ´Ï´Ù.";
-//            pw2.println(data);
-//        }
-//        pw2.close();
+        PrintWriter pw = new PrintWriter("d:/out.txt");
+        for(int i=1; i<11; i++) {
+            String data = i+" ë²ˆì§¸ ì¤„ìž…ë‹ˆë‹¤.";
+            pw.println(data);
+        }
+        pw.close();
+
+
+        PrintWriter pw2 = new PrintWriter(new FileWriter("d:/out.txt", true));
+        for(int i=11; i<21; i++) {
+            String data = i+" ë²ˆì§¸ ì¤„ìž…ë‹ˆë‹¤.";
+            pw2.println(data);
+        }
+        pw2.close();
 
         /*
-        * ÆÄÀÏ ÀÐ±â
+        * ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½
         * */
         BufferedReader br = new BufferedReader(new FileReader("d:/out.txt"));
         while (true) {
