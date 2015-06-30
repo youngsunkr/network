@@ -1,6 +1,10 @@
 package com.jarvisef.test;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +53,23 @@ public class Packet {
         }
     }
 
+    private static WorkStep workStep;
+    private static CCO_C cco_c;
+
+    public Packet() {
+
+    }
+    public Packet(WorkStep workStep) {
+        this.workStep = workStep;
+    }
     public static void main(String[] args) throws Exception {
+
+        if(args!=null) {
+            for(int i=0; i<args.length; i++) {
+                System.out.println("args["+i+"]="+args[i]);
+            }
+        }
+
 //        FileWriter fw = new FileWriter("d:/out.txtt");
 //        for (int i = 0; i < 10; i++) {
 //            String data = i + 1 + " 번째 줄입니다.\r\n";
@@ -124,6 +144,82 @@ public class Packet {
 //        String o_result_msg = cstmt.getString(3);
 //        System.out.printf(o_result_msg);
 
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            //3. sql문 처리 - PreparedStatement
+            String sql="select * from pd order by no desc";
+            ps = db.tibero.prepareStatement(sql);
+
+            //4. 실행
+            rs = ps.executeQuery();
+            //ResultSet 메타 데이터 받아오기
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int colCount = rsmd.getColumnCount(); // 컬럼갯수
+            System.out.println("컬럼수:"+colCount);
+
+            for(int i=1;i<=colCount;i++){
+                String colName = rsmd.getColumnName(i); // 컬럼명
+                String colTypeName = rsmd.getColumnTypeName(i); // 컬럼의 타입명
+                int colDisplaySize = rsmd.getColumnDisplaySize(i); // 디스플레이 사이즈
+                int iNull = rsmd.isNullable(i);
+                String sNull = iNull==0?"not null":"null";
+
+                System.out.println("컬럼명:"+colName+",컬럼타입:"+colTypeName);
+                System.out.println("디스플레이 사이즈:"+colDisplaySize);
+                System.out.println("null 허용여부"+iNull+","+sNull);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally{
+            try {
+                if(rs!=null)rs.close();
+                if(ps!=null)ps.close();
+                if(db.tibero !=null) db.tibero.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        switch (workStep) {
+            case Step1:
+                // 임시테이블 INSERT
+                //FileParse();
+                break;
+            case Step2:
+                // 업무 처리 SP호출
+                //CallSP();
+                break;
+            case Step3:
+                // 파일 생성
+                //CreateFile();
+                break;
+            case Step4:
+                // 종료
+                break;
+        }
+
+        switch (args[0].toUpperCase()) {
+            case "STEP1":
+                // 임시테이블 INSERT
+                //FileParse();
+                break;
+            case "STEP2":
+                // 업무 처리 SP호출
+                //CallSP();
+                break;
+            case "STEP3":
+                // 파일 생성
+                //CreateFile();
+                break;
+            case "STEP4":
+                // 종료
+                break;
+        }
+
+
+
         FileUtils.RECURSIVE_FILE(DirectoryDefine.base_Directory);
         for (String s : FileUtils.retFileList) {
             System.out.println(String.format("%s", s));
@@ -137,36 +233,13 @@ public class Packet {
         System.out.println("");
     }
 
-
-//    public static String subString(String str, int startIndex, int length)
-//    {
-//        byte[] b1 = null;
-//        byte[] b2 = null;
-//
-//        try
-//        {
-//            if (str == null)
-//            {
-//                return "";
-//            }
-//
-//            b1 = str.getBytes();
-//            b2 = new byte[length];
-//
-//            if (length > (b1.length - startIndex))
-//            {
-//                length = b1.length - startIndex;
-//            }
-//
-//            System.arraycopy(b1, startIndex, b2, 0, length);
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
-//
-//        return new String(b2);
-//    }
+    public enum WorkStep {
+        Step1, Step2, Step3, Step4
+    }
+    public enum CCO_C {
+        HFG1000, HFG2000, HFG3000, HFG4000,
+        HFG5000, HFG6000, HFG7000
+    }
 
     public static String getCutUTFString(String str, int len,String tail){
         if( str.length() <= len){

@@ -21,7 +21,18 @@ public class HANACARD_Batch implements Runnable {
         new Thread(this).start();
     }
 
+    public enum CCO_C {
+        HFG1000, HFG2000, HFG3000, HFG4000,
+        HFG5000, HFG6000, HFG7000
+    }
+
     public static void main(String[] args) throws Exception {
+
+        if(args!=null) {
+            for(int i=0; i<args.length; i++) {
+                System.out.println("args["+i+"]="+args[i]);
+            }
+        }
 
         HANACARD_Batch processor = new HANACARD_Batch();
         System.out.println("시작");
@@ -71,7 +82,22 @@ public class HANACARD_Batch implements Runnable {
 //                        Runtime operator = Runtime.getRuntime();
 //                        Process process = operator.exec(command);
 
+                        /*  자바 1.4 이하에서 동작 방식 */
                         Process process = Runtime.getRuntime().exec(command);
+
+                        /*  자바 1.5 이상에서 동작 방식 */
+//                        List<String> cmd = new ArrayList<>();
+//                        cmd.add("java");
+//                        cmd.add("-classpath");
+//                        cmd.add("\"d:/workspace/some project/lib/something.jar\"");
+//                        cmd.add("blah.blah.SomeClass");
+//                        cmd.add("arg1");
+//                        cmd.add("arg2");
+//                        //Process process = new ProcessBuilder(cmd).start();
+//                        ProcessBuilder process = new ProcessBuilder(cmd);
+//                        process.directory(new File("d:/workspace/some project"));
+//                        process.start();
+
 
                         BufferedReader br = null;
                         br = new BufferedReader(new InputStreamReader(process.getInputStream()));
