@@ -1,6 +1,9 @@
 package com.jarvisef.test;
 
+import org.apache.ibatis.type.JdbcType;
+
 import java.io.*;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -29,13 +32,19 @@ public class FileUtils {
      */
     public static List<String> readFileAsListOfStrings(String filename) throws Exception {
 
-//        DBHandler db = new DBHandler("membership");
-//        db.tibero.setAutoCommit(false);
+        DBHandler db = new DBHandler();
+        db.tibero.setAutoCommit(false);
 
         String txtName = null;
         List<String> orgRowData = new ArrayList<String>();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename),"EUC-KR"));
-        int lineNumber = 1;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename),CommonConstants.CHARSET_KCB));
+
+        /* 업무변수 선언 */
+        int intSeq = 1;
+        String strFilename = null;
+        String strCCO_C = null;
+        String strRecode_DV = null;
+        StringBuffer sb = new StringBuffer();
         String line;
 
         // java파일 기본 encoding
@@ -44,60 +53,79 @@ public class FileUtils {
         try {
             while ((line = reader.readLine()) != null) {
 
+                /*
+                * 파일전문 임시테이블 Insert SP 호출
+                * */
+                CallableStatement stmtIns = null;
+                ResultSetMetaData rsmd = null;
+
+                Packet data = new Packet();
+
                 if (line.substring(0, 1).toUpperCase().contains("H")) {
 
                     //System.out.println(line.toUpperCase());
 
-                    Packet recvPacket = new Packet();
-                    recvPacket.addItem(Item.create("구분", 1, null));
-                    recvPacket.addItem(Item.create("일련번호", 9, null));
-                    recvPacket.addItem(Item.create("제휴사코드", 7, null));
-                    recvPacket.addItem(Item.create("파일명", 35, null));
-                    recvPacket.addItem(Item.create("생성일자", 14, null));
-                    recvPacket.addItem(Item.create("FILLER", 734, null));
+                    Packet header = new Packet();
+                    header.addItem(Item.create("구분", 1, null));
+                    header.addItem(Item.create("일련번호", 9, null));
+                    header.addItem(Item.create("제휴사코드", 7, null));
+                    header.addItem(Item.create("파일명", 35, null));
+                    header.addItem(Item.create("생성일자", 14, null));
+                    header.addItem(Item.create("FILLER", 734, null));
 
-                    recvPacket.parse(line.toUpperCase());
-                    //System.out.println(line.toUpperCase());
-                    //System.out.println(recvPacket.getItem("HEAD").raw());
-                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(recvPacket.getItem("일련번호").raw()), recvPacket.getItem("일련번호").raw()));
+                    header.parse(line.toUpperCase());
 
-                    txtName = recvPacket.getItem("파일명").raw().trim();
-                    int pos = txtName.lastIndexOf(".");
-                    String fileExt = txtName.substring(pos + 1).toLowerCase();
-                    //txtName = txtName.substring(0, pos).concat(".").concat(fileExt);
-                    txtName = txtName.substring(0, pos).concat(".sam");
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(header.getItem("구분").raw()), header.getItem("구분").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(header.getItem("일련번호").raw()), header.getItem("일련번호").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(header.getItem("제휴사코드").raw()), header.getItem("제휴사코드").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(header.getItem("파일명").raw()), header.getItem("파일명").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(header.getItem("생성일자").raw()), header.getItem("생성일자").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(header.getItem("FILLER").raw()), header.getItem("FILLER").raw()));
+
+                    strFilename = header.getItem("파일명").raw().trim();
+                    strCCO_C = header.getItem("제휴사코드").raw().trim();
+
+                    int pos = strFilename.lastIndexOf(".");
+                    String fileExt = strFilename.substring(pos + 1).toLowerCase();
+                    //txtName = strFilename.substring(0, pos).concat(".").concat(fileExt);
+                    strFilename = strFilename.substring(0, pos).concat(".sam");
+
                 } else if (line.substring(0, 1).toUpperCase().contains("D")) {
                     //System.out.println(line.toUpperCase());
 
-                    Packet recvPacket = new Packet();
-                    recvPacket.addItem(Item.create("RecordDv", 1, null));
-                    recvPacket.addItem(Item.create("Data1", 12, null));
-                    recvPacket.parse(line.toUpperCase());
+                    // 업무 구분 코드 설정
+                    // 코인 적립/취소 21, 22
+                    if (strRecode_DV.equals("10")) {
+                        strRecode_DV = "21";
+                        stmtIns = db.tibero.prepareCall("{call MEM_IF_FILE(?,?,?,?,?, ?,?,?,?,?, ?,?,?)}");
+                        rsmd = stmtIns.getMetaData();
+                    }
 
-                    //System.out.println(line.toUpperCase());
-                    //System.out.println(recvPacket.getItem("HEAD").raw());
+                    if (strRecode_DV.equals("20")) {
+                        strRecode_DV = "31";
+                        stmtIns = db.tibero.prepareCall("{call MEM_IF_FILE(?,?,?,?,?, ?,?,?,?,?, ?,?,?)}");
+                        rsmd = stmtIns.getMetaData();
+                    }
 
-                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(recvPacket.getItem("Data1").raw()), recvPacket.getItem("Data1").raw()));
+                    data = getFileInfo(strProgram_Nm, strRecode_DV, line);
 
-//                    if (cstmt != null) cstmt.close();
-
-                    System.out.println(String.format("lineNumber : %s", lineNumber));
-                    lineNumber++;
 
                 } else if (line.substring(0, 1).toUpperCase().contains("T")) {
                     //System.out.println(line.toUpperCase());
 
-                    Packet tailRcvPacket = new Packet();
-                    tailRcvPacket.addItem(Item.create("구분", 1, null));
-                    tailRcvPacket.addItem(Item.create("일련번호", 9, null));
-                    tailRcvPacket.addItem(Item.create("제휴사코드", 7, null));
-                    tailRcvPacket.addItem(Item.create("RecordCnt", 7, null));
-                    tailRcvPacket.addItem(Item.create("FILLER", 776, null));
-                    tailRcvPacket.parse(line.toUpperCase());
+                    Packet tail = new Packet();
+                    tail.addItem(Item.create("구분", 1, null));
+                    tail.addItem(Item.create("일련번호", 9, null));
+                    tail.addItem(Item.create("제휴사코드", 7, null));
+                    tail.addItem(Item.create("RecordCnt", 7, null));
+                    tail.addItem(Item.create("FILLER", 776, null));
+                    tail.parse(line.toUpperCase());
 
-                    //System.out.println(recvPacket.getItem("TAIL").raw());
-                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(tailRcvPacket.getItem("일련번호").raw()), tailRcvPacket.getItem("일련번호").raw()));
-                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(tailRcvPacket.getItem("제휴사코드").raw()), tailRcvPacket.getItem("제휴사코드").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(tail.getItem("구분").raw()), tail.getItem("구분").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(tail.getItem("일련번호").raw()), tail.getItem("일련번호").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(tail.getItem("제휴사코드").raw()), tail.getItem("제휴사코드").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(tail.getItem("RecordCnt").raw()), tail.getItem("RecordCnt").raw()));
+                    System.out.println(String.format("[%s] : [%s]", getByteSizeToComplex(tail.getItem("FILLER").raw()), tail.getItem("FILLER").raw()));
                     System.out.println(line);
                 }
 
@@ -116,10 +144,10 @@ public class FileUtils {
             }
 
             // 파일 복사
-            File source = new File(DirectoryDefine.DIRECTORY_HANACARD_RCV_BACKUP + "/" + txtName);
-            File copyFile = new File(DirectoryDefine.DIRECTORY_HANACARD_SND + "/" + txtName);
-            File target = new File(DirectoryDefine.DIRECTORY_HANACARD_SND + "/" + txtName + ".tmp");
-            File sndBackup = new File(DirectoryDefine.DIRECTORY_HANACARD_SND_BACKUP + "/" + txtName);
+            File source = new File(DirectoryDefine.RCV + "/" + txtName);
+            File copyFile = new File(DirectoryDefine.SND + "/" + txtName);
+            File target = new File(DirectoryDefine.SND + "/" + txtName + ".tmp");
+            File sndBackup = new File(DirectoryDefine.SND_BACKUP + "/" + txtName);
 
             if (!source.exists()) {
 //                source.mkdir();
@@ -131,7 +159,7 @@ public class FileUtils {
             }
 
             // 파일명 변경
-            target.renameTo(new File(DirectoryDefine.DIRECTORY_HANACARD_SND + "/" + txtName));
+            target.renameTo(new File(DirectoryDefine.SND + "/" + txtName));
 
             // 최종 파일 제거
             readFileName.delete();
@@ -181,6 +209,7 @@ public class FileUtils {
         reader.close();
         return map;
     }
+
 
     /**
      * Read a Java properties file and return it as a Properties object.
@@ -279,6 +308,7 @@ public class FileUtils {
     }
 
     ///http://www.programkr.com/blog/MUjN1ADMwYT5.html
+
     /**
      * 으로 바이트 단위로 파일 읽기, 없 바이너리 파일을 읽는 같은 그림 목소리, 영상 등 파일.
      */
@@ -320,7 +350,6 @@ public class FileUtils {
             }
         }
     }
-
     /**
      * 으로 문자 단위로 파일 읽기, 없 읽다 텍스트, 숫자 등 형식 파일
      */
@@ -421,6 +450,12 @@ public class FileUtils {
     }
 
     public static List<String> retFileList = new ArrayList<String>();
+
+    public static boolean isTempInsert = false;
+
+    public static String strStep = null;
+    public static String strStatus = null;
+    public static String strProgram_Nm = null;
     public static void RECURSIVE_FILE(String source){
         File dir = new File(source);
         File[] fileList = dir.listFiles();
@@ -448,6 +483,7 @@ public class FileUtils {
         }
     }
 
+
     public static final int getByteSizeToComplex(String str) {
         int en = 0;
         int ko = 0;
@@ -467,4 +503,133 @@ public class FileUtils {
         }
         return (en + ko + etc);
     }
+
+    private static Packet getFileInfo(String strProgram_nm, String strRecode_dv, String fileRow) throws SQLException {
+        DBHandler db = new DBHandler();
+
+        CallableStatement cStmt = null;
+        ResultSet cursor = null;
+        Packet data = new Packet();
+        Packet cryptoData = new Packet();
+        int intSeq = 0;
+
+        /*
+        * 파일전문 인터페이스 정보 SP호출
+        * */
+        cStmt = db.tibero.prepareCall("{call MEM_IF_FILE(?,?,?,?,?, ?,?,?,?,?, ?,?)}");
+        cStmt.registerOutParameter(1, Types.VARCHAR);
+        cStmt.registerOutParameter(2, Types.VARCHAR);
+        cStmt.registerOutParameter(3, Types.VARCHAR);
+        cStmt.registerOutParameter(4, Types.VARCHAR);
+        cStmt.registerOutParameter(5, Types.VARCHAR);
+        cStmt.registerOutParameter(6, Types.VARCHAR);
+        cStmt.setString(7, strProgram_nm);
+        cStmt.setString(8, strRecode_dv);
+        cStmt.registerOutParameter(9, JdbcType.CURSOR.TYPE_CODE);
+
+        try {
+            cStmt.executeUpdate();
+
+            cursor = (ResultSet)cStmt.getObject(9);
+            while (cursor.next()) {
+//                System.out.println(cursor.getString(1));
+//                System.out.println("\t" + cursor.getString(2));
+//                System.out.println("\t" + cursor.getString(3));
+//                System.out.println("\t" + cursor.getString(4));
+//                System.out.println("\t" + cursor.getString(5));
+//                System.out.println("\t" + cursor.getString(6));
+//                System.out.println("\t" + cursor.getString(7));
+//                System.out.println("\t" + cursor.getString(8));
+
+                data.addItem(Item.create(cursor.getString(5), (int) cursor.getInt(6), null));
+                data.parse(fileRow);
+
+                if (cursor.getString(7).toUpperCase().equals("Y")) {
+                    String cryptoItem = CommonUtil.getRPadd(CommonUtil.Crypt(data.getItem(cursor.getString(5)).raw()).trim(), 256);
+                    cryptoData.addItem(Item.create(cursor.getString(5), 256, cryptoItem));
+                } else {    // 암호화 대상 아닌 컬럼
+                    cryptoData.addItem(Item.create(cursor.getString(5), (int) cursor.getInt(6), data.getItem(cursor.getString(5)).raw()));
+                }
+
+                System.out.println(String.format("[%s][%s][%s] : [%s]"
+                        , intSeq
+                        , cursor.getString(5)
+                        , FileUtils.getByteSizeToComplex(cryptoData.getItem(cursor.getString(5)).raw())
+                        , cryptoData.getItem(cursor.getString(5)).raw().trim()));
+
+                intSeq++;
+            }
+        } catch (SQLException ex) {
+            System.out.println("ERROR[" + ex.getErrorCode() + "] : " + ex.getMessage());
+            ex.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } finally {
+            if (cStmt != null) cStmt.close();
+            if (cursor != null) cursor.close();
+            if (db.tibero != null) db.tibero.close();
+        }
+
+        return cryptoData;
+    }
+
+    public static void CallProcessSP(String strCco_C, String strRecode_DV, String strDate) {
+
+    }
+
+    public static void getBatchStepStatus(Connection tibero, String strCco_c, String strRecode_dv, String strDate) {
+
+    }
+
+    public static String setBatchLog(Connection tibero, String strCcoC, String strRecode_DV, String strCco_c, STEP strRecode_dv, STATUS strDate) {
+
+        String o_result_code = null;
+
+        /*
+        * 파일전문 인터페이스 정보 SP호출
+        * */
+
+        return o_result_code;
+    }
+
+    public static void setConsoleLog(ConsoleLogType consoleLogType) {
+        if (consoleLogType.equals(ConsoleLogType.BGN))
+            System.out.println(String.format("[BGN][%s][서비스시작 => %s]", CommonUtil.getDate(CommonConstants.DATE_STANDARD), strProgram_Nm));
+
+        if (consoleLogType.equals(ConsoleLogType.END))
+            System.out.println(String.format("[BGN][%s][서비스종료 => %s]", CommonUtil.getDate(CommonConstants.DATE_STANDARD), strProgram_Nm));
+    }
+
+    public enum STEP {
+        TempTableInsert(10),
+        CallProcessSP(20),
+        FileWrite(30),
+        Complete(40);
+        private int value;
+
+        private STEP(int value) {
+            this.value = value;
+        }
+    };
+
+    public enum STATUS {
+        TempTableInsert(10),
+        CallProcessSP(20),
+        FileWrite(30),
+        Complete(40);
+        private int value;
+
+        private STATUS(int value) {
+            this.value = value;
+        }
+    };
+
+    public enum ConsoleLogType {
+        BGN,
+        END
+    }
+
+
+
 }
+
