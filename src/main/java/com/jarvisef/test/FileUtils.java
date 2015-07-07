@@ -30,7 +30,9 @@ public class FileUtils {
      * Open and read a file, and return the lines in the file as a list of
      * Strings.
      */
-    public static List<String> readFileAsListOfStrings(String filename) throws Exception {
+    public static List<String> readFileAsListOfStrings(String filename, String strDate) throws Exception {
+
+        FileUtils.setConsoleLog(ConsoleLogType.BGN);
 
         DBHandler db = new DBHandler();
         db.tibero.setAutoCommit(false);
@@ -179,6 +181,8 @@ public class FileUtils {
                 }
             }
         }
+
+        FileUtils.setConsoleLog(ConsoleLogType.END);
 
         return orgRowData;
     }
@@ -575,10 +579,16 @@ public class FileUtils {
 
     public static void CallProcessSP(String strCco_C, String strRecode_DV, String strDate) {
 
+        setConsoleLog(ConsoleLogType.BGN);
+
+        setConsoleLog(ConsoleLogType.END);
+
     }
 
     public static void getBatchStepStatus(Connection tibero, String strCco_c, String strRecode_dv, String strDate) {
+        setConsoleLog(ConsoleLogType.BGN);
 
+        setConsoleLog(ConsoleLogType.END);
     }
 
     public static String setBatchLog(Connection tibero, String strCcoC, String strRecode_DV, String strCco_c, STEP strRecode_dv, STATUS strDate) {

@@ -12,7 +12,6 @@
    * . 2015-05-23 : 신규개발        ( 노영선 )
    * 설정) db.properties DB로그인 계정이 DBAUSER 이여야 합니다.
    *****************************************************************************/
-
 %>
 
 <%--
@@ -150,7 +149,7 @@
         if(e.keyCode == 13){
           options = {
             url:           'sptestGetSpList.do',
-            dataType:      'json',
+            kddataType:      'json',
             beforeSubmit:  showRequest,
             success:       showResponse
           };

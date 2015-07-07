@@ -4,7 +4,6 @@ import java.io.*;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by youngsunkr on 2015-06-01.
@@ -107,17 +106,16 @@ public class Packet {
             FileUtils.strStep = "10";
 //            WorkStep.Step1 = 10;
 
-            switch (FileUtils.strStep.toString()) {
+            switch (FileUtils.strStep) {
                 case "10" :
                     // 임시테이블 INSERT
                     //FileParse();
 
-                    FileUtils.setConsoleLog(FileUtils.ConsoleLogType.BGN);
 
                     for (String s : FileUtils.retFileList) {
                         System.out.println(String.format("%s", s));
 
-                        List<String> readDataList = FileUtils.readFileAsListOfStrings(s);
+                        FileUtils.readFileAsListOfStrings(s, strDate);
                     }
 
                     //Collections.reverse(FileUtils.retFileList);
@@ -125,18 +123,15 @@ public class Packet {
                     System.out.println("초기화 완료");
                     System.out.println("");
 
-                    FileUtils.setConsoleLog(FileUtils.ConsoleLogType.END);
                     System.exit(1);
                     break;
                 case "20":
                     // 업무 처리 SP호출
                     //CallSP();
 
-                    FileUtils.setConsoleLog(FileUtils.ConsoleLogType.BGN);
 
                     FileUtils.CallProcessSP(strCco_c, strRecode_DV, strDate);
 
-                    FileUtils.setConsoleLog(FileUtils.ConsoleLogType.END);
                     System.exit(1);
 
                     break;
