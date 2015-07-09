@@ -142,8 +142,8 @@ public class HANACARD_Batch implements Runnable {
         Hashtable ruleHt = new Hashtable();
 //		String dir = "5200";
 
-        System.out.println("경로:" +DirectoryDefine.DIRECTORY_HANABANK_RCV +"/5200/incoming/");
-        String pathname = DirectoryDefine.DIRECTORY_HANABANK_RCV +"/5200/incoming/";
+        System.out.println("경로:" +DirectoryDefine.RCV +"/5200/incoming/");
+        String pathname = DirectoryDefine.RCV +"/5200/incoming/";
 
         //incoming디렉토리의 정보를 가져온다.
         File dir = new File(pathname);

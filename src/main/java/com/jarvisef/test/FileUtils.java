@@ -488,6 +488,7 @@ public class FileUtils {
     }
 
 
+
     public static final int getByteSizeToComplex(String str) {
         int en = 0;
         int ko = 0;
@@ -507,7 +508,6 @@ public class FileUtils {
         }
         return (en + ko + etc);
     }
-
     private static Packet getFileInfo(String strProgram_nm, String strRecode_dv, String fileRow) throws SQLException {
         DBHandler db = new DBHandler();
 
