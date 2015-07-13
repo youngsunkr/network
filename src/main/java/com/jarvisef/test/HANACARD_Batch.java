@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Created by youngsunkr on 2015-06-15.
@@ -83,17 +84,17 @@ public class HANACARD_Batch implements Runnable {
 //                        Process process = operator.exec(command);
 
                         /*  자바 1.4 이하에서 동작 방식 */
-                        Process process = Runtime.getRuntime().exec(command);
+//                        Process process = Runtime.getRuntime().exec(command);
 
                         /*  자바 1.5 이상에서 동작 방식 */
-//                        List<String> cmd = new ArrayList<>();
-//                        cmd.add("java");
-//                        cmd.add("-classpath");
-//                        cmd.add("\"d:/workspace/some project/lib/something.jar\"");
-//                        cmd.add("blah.blah.SomeClass");
-//                        cmd.add("arg1");
-//                        cmd.add("arg2");
-//                        //Process process = new ProcessBuilder(cmd).start();
+                        List<String> cmd = new ArrayList<String>();
+                        cmd.add("java");
+                        cmd.add("-classpath");
+                        cmd.add("\"d:/workspace/some project/lib/something.jar\"");
+                        cmd.add("blah.blah.SomeClass");
+                        cmd.add("arg1");
+                        cmd.add("arg2");
+                        Process process = new ProcessBuilder(cmd).start();
 //                        ProcessBuilder process = new ProcessBuilder(cmd);
 //                        process.directory(new File("d:/workspace/some project"));
 //                        process.start();
