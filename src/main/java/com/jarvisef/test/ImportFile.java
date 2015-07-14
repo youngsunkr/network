@@ -31,6 +31,8 @@ public class ImportFile {
             readFileAsListOfStrings(sourceFile);
         }
 
+
+        readTableToFile();
         // 파일 backup 디렉터리로 이동
         String filename = "", txtName = "";
         File readFileName = new File(filename);
@@ -55,6 +57,106 @@ public class ImportFile {
             // 최종 파일 제거
             readFileName.delete();
         }
+    }
+
+    private static void readTableToFile() throws SQLException {
+        DBHandler db = new DBHandler();
+        PreparedStatement ps = null;
+        StringBuffer strSql = new StringBuffer();
+        strSql.append("");
+
+        try {
+            ps = db.tibero.prepareStatement(strSql.toString());
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            InputStream is = rs.getBinaryStream(1);
+            FileOutputStream fos = new FileOutputStream(DirectoryDefine.RCV_BACKUP + "파일명.sam.tmt");
+            int i = 0;
+            while ((i = is.read()) != -1) {
+                fos.write(i);
+            }
+            fos.close();
+            ps.close();
+            is.close();
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (ps != null) ps.close();
+            if (db.tibero != null ) db.tibero.close();
+        }
+    }
+
+    private static void readTableToFile2() throws SQLException {
+        DBHandler con = new DBHandler();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        InputStream binstr = null;
+        FileOutputStream foStream = null;
+        ArrayList<String> imgList = new ArrayList<String>();
+
+        try{
+            StringBuffer sql = new StringBuffer();
+            sql.append(" SELECT SUBSTR(JPG_NAME, 22, 2) AS MAKETIME, FILEDATA FROM SATHAVEJPG ");
+            sql.append(" WHERE TO_DATE(SUBSTR(JPG_NAME, 14, 8), 'YYYYMMDD') = TO_DATE( ?, 'YYYYMMDD') ");
+            sql.append(" ORDER BY SUBSTR(JPG_NAME, 22, 2) ");
+
+            ps = con.tibero.prepareStatement(sql.toString());
+            ps.setString(1, "20101221");
+            rs = ps.executeQuery();
+
+            while(rs.next()){
+                //먼저 해당일의 폴더를 만든다. ex)2010-11-21
+                File mkFolder = new File("c:/test/test.jpg");
+                if(!mkFolder.exists()){
+                    mkFolder.mkdirs();
+                }
+
+                // 데이터가 중복된경우에 대한처리
+                String makeTime = rs.getString(1);
+                Boolean isExist = false;
+                for(int i=0; i<imgList.size(); i++){
+                    if(imgList.get(i).equals(makeTime)){
+                        isExist = true;
+                        return;
+                    }
+                }
+                //리스트에 이미지의 만들어진 시간을 담는다.(새로운 데이터인 경우에만 더한다.)
+                if(!isExist){
+                    imgList.add(rs.getString(1));
+                }
+                //해당일의 특정 시간의 이미지가 존재하지 않다면 그때 파일을 DB에서 가져와서 새로 만든다.
+                if(!new File("c:/test/test.jpg").exists()){
+                    ResultSet Rs = (ResultSet)rs;
+                    Blob b = Rs.getBlob(2);
+                    binstr = b.getBinaryStream();
+                    foStream = new FileOutputStream("c:/test/test.jpg");
+                    byte abyte[] = new byte[4096];
+                    int i;
+                    while((i = binstr.read(abyte)) != -1){
+                        foStream.write(abyte, 0, i);
+                    }
+                    binstr.close();
+                    foStream.flush();
+                    foStream.close();
+
+                }
+            }
+        }catch(Exception e){
+            System.out.println(" Exception occured : "+e.toString());
+        }finally{
+            try{
+                if(binstr != null) binstr.close();
+                if(foStream != null) foStream.close();
+                if(rs != null) rs.close();
+                if(ps != null) ps.close();
+                if(con.tibero != null) con.tibero.close();
+            }catch(Exception e){
+                System.out.println(" Exception occured : "+e.toString());
+            }
+        }
+
     }
 
     public static void RECURSIVE_FILE(String source){
@@ -104,7 +206,7 @@ public class ImportFile {
         boolean bSuccess                = false;
         String strCCO_C                 = null;
         String strRecode_DV             = null;
-        StringBuffer sbInsertData       = null;
+        StringBuffer sbInsertSql       = null;
         String readLine                 = null;
 
         int file            = sourceFile.lastIndexOf("/");
@@ -133,10 +235,10 @@ public class ImportFile {
 
                     System.out.println(readLine);
 
-                    sbInsertData = new StringBuffer();
-                    sbInsertData.append("");
+                    sbInsertSql = new StringBuffer();
+                    sbInsertSql.append("");
 
-                    bSuccess = stmtIns.execute(sbInsertData.toString());
+                    bSuccess = stmtIns.execute(sbInsertSql.toString());
 
 
                     int pos = strFileName.lastIndexOf(".");
@@ -148,19 +250,19 @@ public class ImportFile {
 
                     System.out.println(readLine);
 
-                    sbInsertData = new StringBuffer();
-                    sbInsertData.append("");
+                    sbInsertSql = new StringBuffer();
+                    sbInsertSql.append("");
 
-                    bSuccess = stmtIns.execute(sbInsertData.toString());
+                    bSuccess = stmtIns.execute(sbInsertSql.toString());
 
                 } else if (readLine.substring(0, 1).toUpperCase().contains("T")) {
 
                     System.out.println(readLine);
 
-                    sbInsertData = new StringBuffer();
-                    sbInsertData.append("");
+                    sbInsertSql = new StringBuffer();
+                    sbInsertSql.append("");
 
-                    bSuccess = stmtIns.execute(sbInsertData.toString());
+                    bSuccess = stmtIns.execute(sbInsertSql.toString());
 
                 }
 
@@ -238,12 +340,7 @@ public class ImportFile {
                 data.addItem(Item.create(cursor.getString(5), (int) cursor.getInt(6), null));
                 data.parse(fileRow);
 
-                if (cursor.getString(7).toUpperCase().equals("Y")) {
-                    String cryptoItem = CommonUtil.getRPadd(CommonUtil.Crypt(data.getItem(cursor.getString(5)).raw()).trim(), 256);
-                    cryptoData.addItem(Item.create(cursor.getString(5), 256, cryptoItem));
-                } else {    // 암호화 대상 아닌 컬럼
-                    cryptoData.addItem(Item.create(cursor.getString(5), (int) cursor.getInt(6), data.getItem(cursor.getString(5)).raw()));
-                }
+                cryptoData.addItem(Item.create(cursor.getString(5), (int) cursor.getInt(6), data.getItem(cursor.getString(5)).raw()));
 
                 System.out.println(String.format("[%s][%s][%s] : [%s]"
                         , intSeq
