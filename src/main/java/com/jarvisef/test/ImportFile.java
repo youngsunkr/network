@@ -32,7 +32,29 @@ public class ImportFile {
         }
 
         // 파일 backup 디렉터리로 이동
+        String filename = "", txtName = "";
+        File readFileName = new File(filename);
+//        for (String list : orgRowData) {
+//            // 파일 저장
+//            FileUtils.writeFile(readFileName.getAbsolutePath(), String.format("%sreaultCode0000", list));
+//        }
 
+        // 파일 복사
+        File source = new File(DirectoryDefine.RCV + "/" + txtName);
+        File copyFile = new File(DirectoryDefine.RCV_BACKUP + "/" + txtName + ".tmp");
+
+        if (!copyFile.exists()) {
+//                copyFile.mkdir();
+            FileUtils.copyFile(copyFile, source);
+        }
+
+        if (copyFile.exists()) {
+            // 파일명 변경
+            copyFile.renameTo(new File(DirectoryDefine.RCV_BACKUP + "/" + txtName));
+
+            // 최종 파일 제거
+            readFileName.delete();
+        }
     }
 
     public static void RECURSIVE_FILE(String source){

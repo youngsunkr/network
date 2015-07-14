@@ -9,7 +9,7 @@ public class DirectoryDefine {
 
     public static final String RCV   	= "/RCV";
 
-    public static final String BACKUP   	= "/RCV/backup";
+    public static final String RCV_BACKUP   	= "/RCV/backup";
 
     public static final String SND   	= "/SND";
 
