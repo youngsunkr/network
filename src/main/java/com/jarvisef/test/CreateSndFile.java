@@ -7,6 +7,8 @@ public class CreateSndFile {
 
     public static void main(String[] args) throws Exception {
 
+        Monitor.monitoring();
+
         DoWork();
 
         System.exit(1);

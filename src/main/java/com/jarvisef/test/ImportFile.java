@@ -1,5 +1,6 @@
 package com.jarvisef.test;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.ibatis.type.JdbcType;
 
 import java.io.*;
@@ -16,7 +17,22 @@ public class ImportFile {
 
     public static void main(String[] args) throws Exception {
 
+        Monitor.monitoring();
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.reset();
+        stopWatch.start();
+        //Thread.sleep(2000);
+
         DoWork();
+
+        stopWatch.stop();
+        System.out.println(stopWatch.toString());
+
+
+        com.jarvisef.test.StopWatch timer = new com.jarvisef.test.StopWatch("test", true);
+        // 동작
+        System.out.println(timer);
 
         System.exit(1);
     }
