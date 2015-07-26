@@ -10,6 +10,6 @@ public class CommonConstants {
     public static final String DATE_MS        = "yyyyMMddHHmmssSSS";
     public static final String DATE_STANDARD        = "yyyy-MM-dd HH:mm:ss";
 
-    public static final String CHARSET_KCB        = "EUC-KR";
+    public static final String CHARSET_EUC_KR        = "EUC-KR";
     public static final String BLANK        = "";
 }

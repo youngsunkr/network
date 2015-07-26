@@ -215,7 +215,7 @@ public class ImportFile {
         Statement stmtIns = null;
 
         String txtName = null;
-        BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile),CommonConstants.CHARSET_KCB));
+        BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile),CommonConstants.CHARSET_EUC_KR));
 
         /* 업무변수 선언 */
         int intSeq                      = 1;

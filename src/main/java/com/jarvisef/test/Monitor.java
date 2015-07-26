@@ -22,6 +22,7 @@ public class Monitor {
     public static void close() {
         if (isRun != null) {
             isRun.close();
+            System.out.println("Monitor.close()");
         }
     }
 }
