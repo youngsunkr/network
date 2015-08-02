@@ -74,7 +74,7 @@ public class Packet {
 //        fw.close();
 
         File fws = new File("D:/전문파일테스트/HFG9000_10_20150706141414_10.sam");
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fws), CommonConstants.CHARSET_KCB));
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fws), CommonConstants.CHARSET_EUC_KR));
 
         String Head = "H000000000HFG900" + CommonUtil.getRPadd("HFG9000_10_20150706141414_10.sam", 35) + CommonUtil.getDate(CommonConstants.DATE_DTTI) + CommonUtil.getBlank(434);
 
@@ -99,7 +99,7 @@ public class Packet {
 
         if (strRecode_DV != null) {
 
-            o_result_code = FileUtils.setBatchLog(db.tibero, strCco_c, strRecode_DV, strDate, FileUtils.STEP.TempTableInsert, FileUtils.STATUS.TempTableInsert);
+            boolean bSuccess  = FileUtils.setBatchLog(strCco_c, strRecode_DV, strDate);
 
             FileUtils.RECURSIVE_FILE(DirectoryDefine.CCO_DirPath(strCco_c, ""));
 
@@ -112,10 +112,10 @@ public class Packet {
                     //FileParse();
 
 
-                    for (String s : FileUtils.retFileList) {
-                        System.out.println(String.format("%s", s));
+                    for (String sourceFile : FileUtils.retFileList) {
+                        System.out.println(String.format("%s", sourceFile));
 
-                        FileUtils.readFileAsListOfStrings(s, strDate);
+                        FileUtils.readFileAsListOfStrings(sourceFile);
                     }
 
                     //Collections.reverse(FileUtils.retFileList);

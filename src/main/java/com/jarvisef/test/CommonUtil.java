@@ -114,7 +114,7 @@ public class CommonUtil {
         }
         int len = 0;
         try {
-            len = str.getBytes(CommonConstants.CHARSET_KCB).length;
+            len = str.getBytes(CommonConstants.CHARSET_EUC_KR).length;
         } catch (UnsupportedEncodingException uee) {
             logger.error(uee.getMessage());
             uee.printStackTrace();
