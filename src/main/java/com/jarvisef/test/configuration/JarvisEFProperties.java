@@ -1,3 +1,5 @@
+//package com.jarvisef.core.configuration;
+
 package com.jarvisef.test.configuration;
 
 import org.apache.commons.configuration.Configuration;
@@ -91,11 +93,11 @@ public class JarvisEFProperties {
         return configuration.getDouble(key);
     }
 
-    public static double getByte(String key, double defaultValue) {
+    public static double getDouble(String key, double defaultValue) {
         return configuration.getDouble(key, defaultValue);
     }
 
-    public static Double getByte(String key, Double defaultValue) {
+    public static Double getDouble(String key, Double defaultValue) {
         return configuration.getDouble(key, defaultValue);
     }
 
@@ -107,7 +109,7 @@ public class JarvisEFProperties {
         return configuration.getFloat(key, defaultValue);
     }
 
-    public static Float getByte(String key, Float defaultValue) {
+    public static Float getFloat(String key, Float defaultValue) {
         return configuration.getFloat(key, defaultValue);
     }
 
@@ -119,7 +121,7 @@ public class JarvisEFProperties {
         return configuration.getInt(key, defaultValue);
     }
 
-    public static Integer getByte(String key, Integer defaultValue) {
+    public static Integer getInteger(String key, Integer defaultValue) {
         return configuration.getInteger(key, defaultValue);
     }
 

@@ -1,11 +1,5 @@
 package com.jarvisef.test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by youngsunkr on 2015-06-07.
  */
@@ -63,19 +57,17 @@ public class StringHelper {
         return strData.substring(iRealStart, iRealEnd);
     }
 
+    public static String SetReplace(String text) {
 
-    public static List<String> readLines(File file) throws Exception {
-        if (!file.exists()) {
-            return new ArrayList<String>();
-        }
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        List<String> results = new ArrayList<String>();
-        String line = reader.readLine();
-        while (line != null) {
-            results.add(line);
-            line = reader.readLine();
+        if (text != null && !"".equals(text)) {
+            text = text.replaceAll("/", "");
+            text = text.replace("\\", "");
+            text = text.replace("..", "");
+            text = text.replace("'", "");
+            text = text.replaceAll("\n", "");
+            text = text.replaceAll("&", "");
         }
 
-        return results;
+        return text;
     }
 }

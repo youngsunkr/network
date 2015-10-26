@@ -145,6 +145,7 @@ public class CommonUtil {
         return str.substring(beginIndex, endIndex).trim();
     }
 
+    @SuppressWarnings("unchecked")
     public static <K, V, T> Map<K, V> prvList (T o) {
         Map<K, V> tmpMap = new HashMap<K, V>();
 
@@ -152,8 +153,8 @@ public class CommonUtil {
             Iterator<K> it = ((List<Map<K, V>>) o).get(i).keySet().iterator();
 
             while (it.hasNext()) {
-                K key = (K) it.next();
-                V value = (V) ((Map<K, V>) ((List<Map<K, V>>) o).get(i)).get(key);
+                K key = it.next();
+                V value = ((List<Map<K, V>>) o).get(i).get(key);
                 tmpMap.put((K) (key + "_" + i), value);
             }
         }

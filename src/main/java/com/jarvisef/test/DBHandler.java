@@ -13,15 +13,24 @@ package com.jarvisef.test;
 /**
  * Created by youngsunkr on 2015-06-10.
  */
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.sql.Connection;
+
 public class DBHandler {
     protected DBConnectionManager connMgr;
     protected Connection tibero;
+
+//    public DBHandler() throws GeneralSecurityException, UnsupportedEncodingException {
+//        connMgr = DBConnectionManager.getInstance();
+//        tibero = connMgr.getConnection("membership");
+//    }
+
     /**
      * DB Pool로부터 접속을 하나 얻어주는 메쏘드.
      *
      */
-    public Connection getDbConnection(String dbName) {
+    public Connection getDbConnection(String dbName) throws GeneralSecurityException, UnsupportedEncodingException {
         connMgr = DBConnectionManager.getInstance();
         tibero = connMgr.getConnection(dbName);
         return tibero;

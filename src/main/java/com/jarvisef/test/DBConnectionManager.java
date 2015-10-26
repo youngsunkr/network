@@ -35,9 +35,12 @@ package com.jarvisef.test;
  */
 
 import java.io.*;
-import java.sql.*;
+import java.security.GeneralSecurityException;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.Date;
 
 /**
  * This class is a Singleton that provides access to one or many
@@ -72,7 +75,7 @@ public class DBConnectionManager {
     생성자는 이어서 init()메소드를 호출한다.
     init()메소드는  db.properties 파일로 부터 데이터베이스 커넥션 풀을 초기화하기 위한 정보를 읽어 들인다.
     */
-    static synchronized public DBConnectionManager getInstance() {
+    static synchronized public DBConnectionManager getInstance() throws GeneralSecurityException, UnsupportedEncodingException {
         if (instance == null) {
             instance = new DBConnectionManager();
         }
@@ -83,7 +86,7 @@ public class DBConnectionManager {
     /**
      * A private constructor since this is a Singleton
      */
-    private DBConnectionManager() {
+    private DBConnectionManager() throws GeneralSecurityException, UnsupportedEncodingException {
         init();
     }
 
@@ -183,7 +186,7 @@ public class DBConnectionManager {
 	  Connection객체는 DBConnectionManager클래스의 getConnection()메소드를 사용하여 구한다.116라인 참조
 
 	 */
-    private void createPools(Properties props) {
+    private void createPools(Properties props) throws GeneralSecurityException, UnsupportedEncodingException {
         Enumeration propNames = props.propertyNames();
         while (propNames.hasMoreElements()) {
             String name = (String) propNames.nextElement();
@@ -195,7 +198,8 @@ public class DBConnectionManager {
                     continue;
                 }
                 String user = props.getProperty(poolName + ".user");
-                String password = props.getProperty(poolName + ".password");
+//                String password = props.getProperty(poolName + ".password");
+                String password = Crypto.Decrypt(props.getProperty(poolName + ".password"));
                 String maxconn = props.getProperty(poolName + ".maxconn", "0");
                 int max;
                 try {
@@ -223,7 +227,7 @@ public class DBConnectionManager {
     사용가능한 JDBC드라이버를 등록한다.  loadDrivers(dbProps)메소드는 JDBC드라이버를 찾을수없거나 또는 등록 하지 못하는
     경우 예외를 발생한다.(222 ~ 270 라인까지의 주석)
          */
-    private void init() {
+    private void init() throws GeneralSecurityException, UnsupportedEncodingException {
         InputStream is = getClass().getResourceAsStream("/db.properties");
         Properties dbProps = new Properties();
         try {

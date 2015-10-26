@@ -18,11 +18,11 @@ public class FileUtils {
 
         FileUtils.setConsoleLog(ConsoleLogType.BGN);
 
-        FileUtils.setBatchLog(
-                FileUtils.strCCO_C
-                , FileUtils.strProgram_Id
-                , "20"
-        );
+//        FileUtils.setBatchLog(
+//                FileUtils.strCCO_C
+//                , FileUtils.strProgram_Id
+//                , "20"
+//        );
 
         DBHandler db = new DBHandler();
         db.tibero.setAutoCommit(false);
@@ -110,7 +110,7 @@ public class FileUtils {
             File source = new File(DirectoryDefine.RCV + "/" + txtName);
             File copyFile = new File(DirectoryDefine.SND + "/" + txtName);
             File target = new File(DirectoryDefine.SND + "/" + txtName + ".tmp");
-            File sndBackup = new File(DirectoryDefine.SND_BACKUP + "/" + txtName);
+            File sndBackup = new File(DirectoryDefine.BackupDir + "/" + txtName);
 
             if (!source.exists()) {
 //                source.mkdir();
@@ -219,37 +219,11 @@ public class FileUtils {
     public static boolean isTempInsert = false;
     public static String strStep = null;
     public static String strStatus = null;
-    public static String strCCO_C = new String();
+    public static String strCCO_C = null;
     public static String strProgram_Id = null;
     public static String o_result_code = null;
     public static String o_result_args = null;
     public static String o_result_msg = null;
-    public static void RECURSIVE_FILE(String source){
-        File dir = new File(source);
-        File[] fileList = dir.listFiles();
-        try {
-
-            for (int i = 0; i < fileList.length; i++) {
-                File file = fileList[i];
-                if (file.isFile()) {
-                    if (file.getName().indexOf("HFG") > -1 && file.getName().toUpperCase().endsWith(".SAM")) {
-                        // 파일이 있다면 파일 이름 출력
-                        System.out.println("\t 파일 이름 = " + file.getName());
-                        //retFileList.add(file.getName());
-                        retFileList.add(file.getPath());
-                    }
-                } else if (file.isDirectory()) {
-                    if (file.getName().indexOf("HFG") > -1 || file.getName().toUpperCase().equals("RCV")) {
-                        System.out.println("디렉토리 이름 = " + file.getName());
-                        // 서브디렉토리가 존재하면 재귀적 방법으로 다시 탐색
-                        RECURSIVE_FILE(file.getCanonicalPath().toString());
-                    }
-                }
-            }
-        }catch(IOException ex){
-            ex.printStackTrace();
-        }
-    }
 
     public static final int getByteSizeToComplex(String str) {
         int en = 0;
@@ -271,47 +245,30 @@ public class FileUtils {
         return (en + ko + etc);
     }
 
-    public static void CallProcessSP(String strCco_C, String strRecode_DV, String strDate) {
 
-        setConsoleLog(ConsoleLogType.BGN);
+    /**
+     * 배치 로그 생성 및 결과 return
+     * @param strCcoC : 관계사코드
+     * @param strProgram_Id : 프로그램_ID
+     * @param strCl_st_c : 마감_상태_코드
+     * @param strGetToday : 변경일자
+     * @param v_oj_ct : 대상_건수
+     * @param v_pc_ct : 처리_건수
+     * @param v_err_ct : 오류건수
+     * @param err_Msg : 오류메시지
+     * @return
+     * @throws SQLException
+     */
+    public static boolean setBatchLog(String strCcoC
+                                      , String strProgram_Id
+                                      , String strCl_st_c
+                                      , String strGetToday
+                                      , String v_oj_ct
+                                      , String v_pc_ct
+                                      , String v_err_ct
+                                      , String err_Msg
 
-        setConsoleLog(ConsoleLogType.END);
-
-    }
-
-    public static void getBatchStepStatus(Connection tibero, String strCco_c, String strRecode_dv, String strDate) throws SQLException {
-        setConsoleLog(ConsoleLogType.BGN);
-
-        DBHandler db = new DBHandler();
-        CallableStatement cStmt = null;
-        String strProcessSP = null;
-        String retFileName = null;
-
-        Statement stmt = db.tibero.createStatement();
-        ResultSet rs = null;
-        try {
-
-            StringBuffer sbInsertSQL= new StringBuffer();
-            sbInsertSQL.append("SELECT ");
-
-            rs = stmt.executeQuery(sbInsertSQL.toString());
-
-            while (rs.next()) {
-                retFileName = rs.getString(1);
-            }
-
-        } catch (SQLException ex) {
-            System.out.println("Error[" + ex.getErrorCode() + "] : " + ex.getMessage());
-            ex.printStackTrace();
-        } finally {
-            if (rs != null) rs.close();
-            if (cStmt != null) cStmt.close();
-        }
-
-        setConsoleLog(ConsoleLogType.END);
-    }
-
-    public static boolean setBatchLog(String strCcoC, String strProgram_Id, String strCl_st_c) throws SQLException {
+    ) throws SQLException {
 
         boolean bSuccess = false;
 
@@ -325,22 +282,23 @@ public class FileUtils {
         cStmt.registerOutParameter(3, Types.VARCHAR);
 
         cStmt.setString(4, CommonUtil.getDate(CommonConstants.DATE_MS));
-        cStmt.setString(5, "BATCH");
+        cStmt.setString(5, "JAVA");
         cStmt.setString(6, CommonUtil.getDate(CommonConstants.DATE_DTTI));
-        cStmt.setString(7, "C");
-        cStmt.setString(8, strProgram_Id);
-        cStmt.setString(9, strCcoC);
-        cStmt.setString(10, CommonUtil.getDate(CommonConstants.DATE_DT));
-        cStmt.setString(11, CommonUtil.getDate(CommonConstants.DATE_DT));
-        cStmt.setString(12, CommonUtil.getDate(CommonConstants.DATE_DT));
-        cStmt.setString(13, CommonUtil.getDate(CommonConstants.DATE_DTTI));
-        cStmt.setString(14, CommonUtil.getDate(CommonConstants.DATE_DTTI));
-        cStmt.setString(15, strCl_st_c);
-        cStmt.setString(16, "0");
-        cStmt.setString(17, "0");
-        cStmt.setString(18, "0");
-        cStmt.setString(19, "0");
-        cStmt.setString(20, "0");
+        cStmt.setString(7, "D");
+
+        cStmt.setString(8, strProgram_Id);                      /* 프로그램_ID */
+        cStmt.setString(9, strCcoC);                            /* 관계사코드 */
+        cStmt.setString(10, strGetToday.substring(0, 8));       /* 마감_일자 */
+        cStmt.setString(11, strGetToday.substring(0, 8));       /* 마감_조건_시작일자 */
+        cStmt.setString(12, strGetToday.substring(0, 8));       /* 마감_조건_종료일자 */
+        cStmt.setString(13, strGetToday);                       /* 마감_시작_일자(배치시작시간) */
+        cStmt.setString(14, CommonUtil.getToday());             /* 마감_종료_일자(배치종료시간) */
+        cStmt.setString(15, strCl_st_c);                        /* 마감_상태_코드 */
+        cStmt.setString(16, "00");                              /* 배치파일IF 처리_단계 */
+        cStmt.setString(17, v_oj_ct);                           /* 대상_건수 */
+        cStmt.setString(18, v_pc_ct);                           /* 처리_건수 */
+        cStmt.setString(19, v_err_ct);                          /* 오류_건수 */
+        cStmt.setString(20, err_Msg);                           /* 오류_내용*/
 
         try {
 
@@ -350,7 +308,11 @@ public class FileUtils {
             o_result_args = cStmt.getString(2);
             o_result_msg = cStmt.getString(3);
 
-            if (o_result_code.equals("00000")) bSuccess = true;
+            if (o_result_code.equals("00000")) {
+                bSuccess = true;
+            } else {
+                System.out.println("Error[" + o_result_code + "] : " + o_result_msg);
+            }
 
             cStmt.close();
             db.tibero.close();
@@ -377,6 +339,88 @@ public class FileUtils {
             System.out.println(String.format("[BGN][%s][서비스종료 => %s]", CommonUtil.getDate(CommonConstants.DATE_STANDARD), strProgram_Id));
     }
 
+    public static void setConsoleLog(ConsoleLogType consoleLogType, String spName) {
+        if (consoleLogType.equals(ConsoleLogType.BGN))
+            System.out.println(String.format("[BGN][%s][서비스시작 => %s]", CommonUtil.getDate(CommonConstants.DATE_STANDARD), spName));
+
+        if (consoleLogType.equals(ConsoleLogType.END))
+            System.out.println(String.format("[BGN][%s][서비스종료 => %s]", CommonUtil.getDate(CommonConstants.DATE_STANDARD), spName));
+    }
+
+    public static void setConsoleLog(ConsoleLogType consoleLogType, String strCCO_c, String strRecord_dv) {
+        if (consoleLogType.equals(ConsoleLogType.BGN))
+            System.out.println(String.format("[BGN][%s][서비스시작 => %s] 관계사 : %s, 업무구분 : %s", CommonUtil.getDate(CommonConstants.DATE_STANDARD), strProgram_Id, strCCO_c, strRecord_dv));
+
+        if (consoleLogType.equals(ConsoleLogType.END))
+            System.out.println(String.format("[BGN][%s][서비스종료 => %s] 관계사 : %s, 업무구분 : %s", CommonUtil.getDate(CommonConstants.DATE_STANDARD), strProgram_Id, strCCO_c, strRecord_dv));
+    }
+
+    public static void getProgramId(String sourceFile) {
+
+        strCCO_C = sourceFile.split("_")[1];                // 관계사코드
+        String strRecord_DV = sourceFile.split("_")[2];     // 배치업무구분
+
+        switch (strRecord_DV) {
+            case "10" : // 코인 적립 배치 등록(IF_PT_006)
+                strProgram_Id = "MEM_PT_B_009";
+                break;
+            case "20" : // 코인 사용 배치 등록(IF_PT_006)
+                strProgram_Id = "MEM_PT_B_010";
+                break;
+            case "21" : // 고객 가용/소멸예정코인 조회(IF_PT_013)
+                strProgram_Id = "MEM_PT_B_012";
+                break;
+            case "30" : // 코인 적립/사용 거래 대사(IF_PT_008)
+                strProgram_Id = "MEM_PT_B_011";
+                break;
+            case "31" : // 코인 적립/사용 거래 대사(전체 TR : 하나은행, 외환은행, 하나대투)(IF_PT_108)
+                strProgram_Id = "MEM_PT_B_011";
+                break;
+            case "40" : // 멤버십 거래내역(IF_PT_900)
+                strProgram_Id = "MEM_PT_B_008";
+                break;
+            case "50" : // 관계사 일정산내역(IF_ADJ_001)
+                strProgram_Id = "MEM_ADJ_S_005";
+                break;
+            case "51" : // 관계사 월정산내역(IF_ADJ_002)
+                strProgram_Id = "MEM_ADJ_S_010";
+                break;
+            case "52" : // 코인사용 거래내역(IF_ADJ_005)
+                strProgram_Id = "MEM_ADJ_S_009";
+                break;
+            case "53" : // 외환은행 정산내역 송신
+                strProgram_Id = "MEM_ADJ_S_011";
+                break;
+            case "54" : // ERP 일정산 내역 송신
+                strProgram_Id = "MEM_ADJ_S_012";
+                break;
+            case "55" : // ERP 월정산 내역 송신
+                strProgram_Id = "MEM_ADJ_S_013";
+                break;
+            case "60" : // 제휴사가맹점마스터 일괄 등록(사용안함)
+                strProgram_Id = "MEM_COP_B_001";
+                break;
+            case "70" : // 소멸 적립 내역(IF_ADJ_003)
+                strProgram_Id = "MEM_ADJ_S_007";
+                break;
+            case "80" : // 거래사유별 거래 집계 대사(정산)(IF_ADJ_004)
+                strProgram_Id = "MEM_ADJ_S_008";
+                break;
+            case "90" : // 온라인 로그인정보(IF_MOB_002)
+                strProgram_Id = "MEM_MBR_S_036";
+                break;
+            case "91" : // 고객혜택정보 등록(IF_MBR_910)
+                strProgram_Id = "MEM_MBR_S_037";
+                break;
+            case "92" : // 멤버십 신청서 가입 정보(IF_MBR_902)
+                strProgram_Id = "MEM_MBR_S_038";
+                break;
+            default:
+                strProgram_Id = "TEMP_TABLE_INSERT";
+                break;
+        }
+    }
+
     public enum STEP {
         TempTableInsert(10),
         CallProcessSP(20),
@@ -384,10 +428,10 @@ public class FileUtils {
         Complete(40);
         private int value;
 
-        private STEP(int value) {
+        STEP(int value) {
             this.value = value;
         }
-    };
+    }
 
     public enum STATUS {
         TempTableInsert(10),
@@ -396,10 +440,10 @@ public class FileUtils {
         Complete(40);
         private int value;
 
-        private STATUS(int value) {
+        STATUS(int value) {
             this.value = value;
         }
-    };
+    }
 
     public enum ConsoleLogType {
         BGN,

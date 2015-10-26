@@ -95,13 +95,13 @@ public class Packet {
         DBHandler db = new DBHandler();
         db.tibero.setAutoCommit(true);
 
-       FileUtils.getBatchStepStatus(db.tibero, strCco_c, strRecode_DV, strDate);
+//        FileUtils.getBatchStepStatus(db.tibero, strCco_c, strRecode_DV, strDate);
 
         if (strRecode_DV != null) {
 
-            boolean bSuccess  = FileUtils.setBatchLog(strCco_c, strRecode_DV, strDate);
+//            boolean bSuccess  = FileUtils.setBatchLog(strCco_c, strRecode_DV, strDate);
 
-            FileUtils.RECURSIVE_FILE(DirectoryDefine.CCO_DirPath(strCco_c, ""));
+//            FileUtils.RECURSIVE_FILE(DirectoryDefine.CCO_DirPath(strCco_c, ""));
 
             FileUtils.strStep = "10";
 //            WorkStep.Step1 = 10;
@@ -130,7 +130,7 @@ public class Packet {
                     //CallSP();
 
 
-                    FileUtils.CallProcessSP(strCco_c, strRecode_DV, strDate);
+//                    FileUtils.CallProcessSP(strCco_c, strRecode_DV, strDate);
 
                     System.exit(1);
 
@@ -158,7 +158,7 @@ public class Packet {
         Step1(10), Step2(20), Step3(30), Step4(40);
         private int value;
 
-        private WorkStep(int value) {
+        WorkStep(int value) {
             this.value = value;
         }
     }
