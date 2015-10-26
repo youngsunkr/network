@@ -20,6 +20,8 @@
           <element id="library" level="project" name="Maven: org.apache.ibatis:ibatis-sqlmap:3.0-beta-10" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.12" />
           <element id="library" level="project" name="Maven: org.apache.commons:commons-lang3:3.4" />
+          <element id="library" level="project" name="Maven: commons-configuration:commons-configuration:1.10" />
+          <element id="library" level="project" name="Maven: commons-lang:commons-lang:2.6" />
         </element>
       </element>
       <element id="directory" name="META-INF">
